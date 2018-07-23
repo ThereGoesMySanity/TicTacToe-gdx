@@ -1,0 +1,45 @@
+{
+    "logs": [
+        {
+            "outputFile": "/home/will/TicTacToe/android/build/intermediates/incremental/mergeDebugResources/merged.dir/values/values.xml",
+            "map": [
+                {
+                    "source": "/home/will/TicTacToe/android/res/values/styles.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "17",
+                        "endLines": "9",
+                        "endColumns": "12",
+                        "endOffsets": "475"
+                    },
+                    "to": {
+                        "startLines": "3",
+                        "startColumns": "4",
+                        "startOffsets": "114",
+                        "endLines": "10",
+                        "endColumns": "12",
+                        "endOffsets": "572"
+                    }
+                },
+                {
+                    "source": "/home/will/TicTacToe/android/res/values/strings.xml",
+                    "from": {
+                        "startLines": "3",
+                        "startColumns": "4",
+                        "startOffsets": "56",
+                        "endColumns": "58",
+                        "endOffsets": "110"
+                    },
+                    "to": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "58",
+                        "endOffsets": "109"
+                    }
+                }
+            ]
+        }
+    ]
+}
