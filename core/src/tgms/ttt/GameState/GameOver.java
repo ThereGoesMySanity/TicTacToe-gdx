@@ -40,11 +40,11 @@ public class GameOver extends GameState {
 	public void select(){
 		gsm.setState(GameStateManager.BOARDSTATE);
 	}
-	public void mouseClicked(Point click) {
+	public void mouseClicked(GridPoint2 click) {
 		
 	}
 	@Override
-	public void mouseReleased(Point click) {}
+	public void mouseReleased(GridPoint2 click) {}
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		// TODO Auto-generated method stub

@@ -1,5 +1,11 @@
 package tgms.ttt.GameState;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.GridPoint2;
+
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
@@ -7,7 +13,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import tgms.ttt.Net.Connection;
-public class GameStateManager {
+public class GameStateManager implements InputProcessor {
 	private GameState[] gameStates;
 	private int currentState;
 	public String WIN;
@@ -68,28 +74,63 @@ public class GameStateManager {
 		currentState = state;
 		loadState(state);
 	}
-	public void update(){
+
+    @Override
+    public boolean keyDown(int k) {
+        if(gameStates[currentState]!=null) return gameStates[currentState].keyPressed(k);
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int k) {
+        if(gameStates[currentState]!=null) return gameStates[currentState].keyReleased(k);
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        if(gameStates[currentState]!=null && button == Input.Buttons.LEFT) {
+            return gameStates[currentState].mouseReleased(screenX, screenY);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        if(gameStates[currentState]!=null) {
+            return gameStates[currentState].mouseMoved(screenX, screenY);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        return false;
+    }
+
+    public void update(){
 		if(gameStates[currentState]!=null) gameStates[currentState].update();
 	}
 
-	public void draw(Graphics2D g){
-		if(gameStates[currentState] != null) gameStates[currentState].draw(g);
-	}
-	public void keyPressed(int k){
-		if(gameStates[currentState]!=null) gameStates[currentState].keyPressed(k);
-	}
-	public void keyReleased(int k){
-		if(gameStates[currentState]!=null) gameStates[currentState].keyReleased(k);
-	}
-	public void mouseReleased(Point click) {
-		if(gameStates[currentState]!=null) gameStates[currentState].mouseReleased(click);
-
+	public void draw(ShapeRenderer s, SpriteBatch sb){
+		if(gameStates[currentState] != null) gameStates[currentState].draw(s, sb);
 	}
 	public GameState getState(){
 		return gameStates[currentState];
 	}
-	public void mouseMoved(MouseEvent e) {
-		if(gameStates[currentState]!=null) gameStates[currentState].mouseMoved(e);
-	}
-	
 }

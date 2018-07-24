@@ -91,7 +91,7 @@ public class MenuState extends GameState{
 	}
 	public void keyReleased(int k){}
 	@Override
-	public void mouseReleased(Point click) {
+	public void mouseReleased(GridPoint2 click) {
 		// TODO Auto-generated method stub
 		if(click.y >= getMenuY() - getMenuSpacing() && click.y <= getMenuY() + options.length * getMenuSpacing()
 				&& click.x >= getMenuX()){
@@ -99,7 +99,7 @@ public class MenuState extends GameState{
 		}
 	}
 	@Override
-	public void mouseClicked(Point click) {
+	public void mouseClicked(GridPoint2 click) {
 		// TODO Auto-generated method stub
 		
 	}

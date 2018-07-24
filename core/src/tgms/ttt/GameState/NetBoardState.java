@@ -17,7 +17,7 @@ public class NetBoardState extends BoardState {
 	}
 	
 	@Override
-	public void mouseReleased(Point p) {
+	public void mouseReleased(GridPoint2 p) {
 		if(conn.connected() && getTurn() == conn.getPlayerNum()) {
 			super.mouseReleased(p);
 		}

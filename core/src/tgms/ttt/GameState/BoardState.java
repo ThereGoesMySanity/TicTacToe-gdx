@@ -2,20 +2,22 @@ package tgms.ttt.GameState;
 
 import java.awt.BasicStroke;
 import com.badlogic.gdx.graphics.Color;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.math.Vector2;
+
 import java.util.ArrayList;
 
 import tgms.ttt.Main.GamePanel;
+import tgms.ttt.TicTacToe;
 
 public class BoardState extends GameState {
 	//0 = blank but part of board, 1 and 2 = X and O, 3 and 4 = completed X and O row, 5 = Not board
 	private ArrayList<ArrayList<Integer>> fullBoard = new ArrayList<ArrayList<Integer>>();
 	protected int turn = 1;
-	private Point lastMove;
+	private GridPoint2 lastMove;
 	private int winner = 0;
 	private int offsetx, offsety;
 	private int squareSize;
@@ -27,7 +29,7 @@ public class BoardState extends GameState {
 
 	private Color colorX, colorO;
 	private Color colorBoard;
-	private BufferedImage xPic, oPic;
+	private Texture xPic, oPic;
 
 	public BoardState(GameStateManager gsm, int boardSize, int inARow) {
 		this.boardSize = boardSize;
@@ -99,8 +101,12 @@ public class BoardState extends GameState {
 		}
 	}
 
-	private Point getCoords(int x, int y) {
-		return new Point(x * squareSize + offsetx, y * squareSize + offsety);
+	private Vector2 getCoords(GridPoint2 g) {
+		return new Vector2(g.x * squareSize + offsetx, g.y * squareSize + offsety);
+	}
+
+	private Vector2 getCoords(int x, int y) {
+		return new Vector2(x * squareSize + offsetx, y * squareSize + offsety);
 	}
 
 	private boolean inBounds(int x, int y) {
@@ -110,8 +116,8 @@ public class BoardState extends GameState {
 				|| y >= fullBoard.get(0).size());
 	}
 
-	private void drawGrid(Graphics2D g) {
-		Point point1, point2;
+	private void drawGrid(ShapeRenderer s) {
+		Vector2 point1, point2;
 		for (int i = 0; i < fullBoard.size(); i++) {
 			for (int j = 0; j < fullBoard.get(0).size(); j++) {
 				if (getSquareType(i, j) != 5) {
@@ -119,13 +125,13 @@ public class BoardState extends GameState {
 							&& fullBoard.get(i + 1).get(j) != 5) { // if the one below it is also a valid space
 						point1 = getCoords(j, i + 1);
 						point2 = getCoords(j + 1, i + 1);
-						g.drawLine(point1.x, point1.y, point2.x, point2.y);
+						s.line(point1, point2);
 					}
 					if (j != fullBoard.get(0).size() - 1
 							&& fullBoard.get(i).get(j + 1) != 5) { // if the one to the right is valid
 						point1 = getCoords(j + 1, i);
 						point2 = getCoords(j + 1, i + 1);
-						g.drawLine(point1.x, point1.y, point2.x, point2.y);
+						s.line(point1, point2);
 					}
 				}
 			}
@@ -133,19 +139,20 @@ public class BoardState extends GameState {
 	}
 
 	@Override
-	public void draw(Graphics2D g) {
-		Point point0 = new Point();
-		Point point1 = new Point();
-		Point point2 = new Point();
-		g.setColor(Color.WHITE);
-		g.fillRect(0, 0, TicTacToe.WIDTH, TicTacToe.HEIGHT);
+	public void draw(ShapeRenderer s, SpriteBatch sb) {
+		Vector2 point0 = new Vector2();
+		GridPoint2 point1 = new GridPoint2();
+		GridPoint2 point2 = new GridPoint2();
+		s.setColor(Color.WHITE);
+		s.set(ShapeRenderer.ShapeType.Filled);
+		s.rect(0, 0, TicTacToe.WIDTH, TicTacToe.HEIGHT);
 		point0 = getCoords(mouseX, mouseY);
 		if (inBounds(mouseY, mouseX) && getSquareType(mouseY, mouseX) != 5) {
-			g.setColor(Color.GREEN);
-			g.fillRect(point0.x, point0.y, squareSize, squareSize);
+			s.setColor(Color.GREEN);
+			s.rect(point0.x, point0.y, squareSize, squareSize);
 		}
-		g.setColor(colorBoard);
-		drawGrid(g);
+		s.setColor(colorBoard);
+		drawGrid(s);
 		for (int i = 0; i < fullBoard.size(); i++) {
 			for (int j = 0; j < fullBoard.get(0).size(); j++) {
 				if (getSquareType(i, j) != 5) {
@@ -154,36 +161,36 @@ public class BoardState extends GameState {
 						point1 = getCoords(j, i);
 						point2 = getCoords(j + 1, i + 1);
 						if (xPic != null) {
-							g.drawImage(xPic, point1.x, point1.y, squareSize,
-									squareSize, null);
+							sb.draw(xPic, point1.x, point1.y, squareSize,
+									squareSize);
 						} else {
-							g.drawLine(point1.x, point1.y, point2.x, point2.y);
+							s.drawLine(point1.x, point1.y, point2.x, point2.y);
 							point1 = getCoords(j + 1, i);
 							point2 = getCoords(j, i + 1);
-							g.drawLine(point1.x, point1.y, point2.x, point2.y);
+							s.drawLine(point1.x, point1.y, point2.x, point2.y);
 						}
 					} else if (getSquareType(i, j) == 2) {
 						point1 = getCoords(j, i);
 						point2 = getCoords(j + 1, i + 1);
 						if (oPic != null) {
-							g.drawImage(oPic, point1.x, point1.y, squareSize,
+							s.drawImage(oPic, point1.x, point1.y, squareSize,
 									squareSize, null);
 						} else {
-							g.drawOval(point1.x + 1, point1.y + 1,
+							s.drawOval(point1.x + 1, point1.y + 1,
 									squareSize - 2, squareSize - 2);
 						}
 					} else if (getSquareType(i, j) == 3) {
 						point1 = getCoords(j, i);
 						point2 = getCoords(j + 1, i + 1);
-						g.setColor(colorX);
+						s.setColor(colorX);
 						if (xPic != null) {
-							g.drawImage(xPic, point1.x, point1.y, squareSize,
+							s.drawImage(xPic, point1.x, point1.y, squareSize,
 									squareSize, null);
 						} else {
-							g.drawLine(point1.x, point1.y, point2.x, point2.y);
+							s.drawLine(point1.x, point1.y, point2.x, point2.y);
 							point1 = getCoords(j + 1, i);
 							point2 = getCoords(j, i + 1);
-							g.drawLine(point1.x, point1.y, point2.x, point2.y);
+							s.drawLine(point1.x, point1.y, point2.x, point2.y);
 						}
 						for (int k = -1; k < 2; k++) {
 							for (int l = -1; l < 2; l++) {
@@ -193,12 +200,12 @@ public class BoardState extends GameState {
 									if (fullBoard.get(i + k).get(j + l) == 3) {
 										point1 = getCoords(j, i);
 										point2 = getCoords(j + l, i + k);
-										g.setStroke(new BasicStroke(3));
-										g.drawLine(point1.x + squareSize / 2,
+										s.setStroke(new BasicStroke(3));
+										s.drawLine(point1.x + squareSize / 2,
 												point1.y + squareSize / 2,
 												point2.x + squareSize / 2,
 												point2.y + squareSize / 2);
-										g.setStroke(new BasicStroke());
+										s.setStroke(new BasicStroke());
 									}
 								}
 							}
@@ -206,12 +213,12 @@ public class BoardState extends GameState {
 					} else if (getSquareType(i, j) == 4) {
 						point1 = getCoords(j, i);
 						point2 = getCoords(j + 1, i + 1);
-						g.setColor(colorO);
+						s.setColor(colorO);
 						if (oPic != null) {
-							g.drawImage(oPic, point1.x, point2.x, squareSize,
+							s.drawImage(oPic, point1.x, point2.x, squareSize,
 									squareSize, null);
 						} else {
-							g.drawOval(point1.x + 1, point1.y + 1, squareSize,
+							s.drawOval(point1.x + 1, point1.y + 1, squareSize,
 									squareSize);
 						}
 						for (int k = -1; k < 2; k++) {
@@ -222,18 +229,18 @@ public class BoardState extends GameState {
 									if (fullBoard.get(i + k).get(j + l) == 4) {
 										point1 = getCoords(j, i);
 										point2 = getCoords(j + l, i + k);
-										g.setStroke(new BasicStroke(3));
-										g.drawLine(point1.x + squareSize / 2,
+										s.setStroke(new BasicStroke(3));
+										s.drawLine(point1.x + squareSize / 2,
 												point1.y + squareSize / 2,
 												point2.x + squareSize / 2,
 												point2.y + squareSize / 2);
-										g.setStroke(new BasicStroke());
+										s.setStroke(new BasicStroke());
 									}
 								}
 							}
 						}
 					}
-					g.setColor(colorBoard);
+					s.setColor(colorBoard);
 				}
 			}
 		}
@@ -348,9 +355,9 @@ public class BoardState extends GameState {
 		}
 		for (int i = 0; i < fullBoard.size(); i++) {
 			for (int j = 0; j < fullBoard.get(0).size(); j++) {
-				ArrayList<Point> match = new ArrayList<Point>();
+				ArrayList<GridPoint2> match = new ArrayList<GridPoint2>();
 				int previousSize = 0;
-				match.add(new Point(i, j));
+				match.add(new GridPoint2(i, j));
 				if (getSquareType(i, j) == 3) {
 					while (previousSize < match.size()) {
 						previousSize = match.size();
@@ -365,10 +372,10 @@ public class BoardState extends GameState {
 											.get(0).size()) {
 										if (fullBoard.get(match.get(x).x + k)
 												.get(match.get(x).y + l) == 3
-												&& !(match.contains(new Point(
+												&& !(match.contains(new GridPoint2(
 														match.get(x).x + k,
 														match.get(x).y + l)))) {
-											match.add(new Point(
+											match.add(new GridPoint2(
 													match.get(x).x + k,
 													match.get(x).y + l));
 										}
@@ -395,10 +402,10 @@ public class BoardState extends GameState {
 											.get(0).size()) {
 										if (fullBoard.get(match.get(x).x + k)
 												.get(match.get(x).y + l) == 4
-												&& !(match.contains(new Point(
+												&& !(match.contains(new GridPoint2(
 														match.get(x).x + k,
 														match.get(x).y + l)))) {
-											match.add(new Point(
+											match.add(new GridPoint2(
 													match.get(x).x + k,
 													match.get(x).y + l));
 										}
@@ -457,7 +464,7 @@ public class BoardState extends GameState {
 	}
 
 	@Override
-	public void mouseReleased(Point point) {
+	public void mouseReleased(GridPoint2 point) {
 		int currentX = (point.x - offsetx) / squareSize;
 		int currentY = (point.y - offsety) / squareSize;
 		if (currentY < fullBoard.size() && currentX < fullBoard.get(0).size()) {
@@ -469,7 +476,7 @@ public class BoardState extends GameState {
 	public synchronized void makeMove(int x, int y) {
 		if (fullBoard.get(y).get(x) == 0) {
 			fullBoard.get(y).set(x, getTurn());
-			lastMove = new Point(x, y);
+			lastMove = new GridPoint2(x, y);
 			nextTurn();
 		}
 	}
@@ -483,7 +490,7 @@ public class BoardState extends GameState {
 	}
 
 	@Override
-	public void mouseClicked(Point click) {
+	public void mouseClicked(GridPoint2 click) {
 	}
 
 	@Override

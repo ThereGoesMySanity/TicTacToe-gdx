@@ -7,6 +7,8 @@ import tgms.ttt.TicTacToe;
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		new LwjglApplication(new TicTacToe(), config);
+		config.height = 720;
+		config.width = 720;
+		new LwjglApplication(new TicTacToe(config.width, config.height), config);
 	}
 }

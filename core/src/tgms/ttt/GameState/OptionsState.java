@@ -1,15 +1,20 @@
 package tgms.ttt.GameState;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.GridPoint2;
+
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.LinkedHashMap;
 import java.awt.event.KeyEvent;
-import tgms.ttt.Main.GamePanel;
+import tgms.ttt.TicTacToe;
 
 public class OptionsState extends GameState {
 	private String[] options = {
@@ -29,8 +34,7 @@ public class OptionsState extends GameState {
 	private BufferedImage oImage;
 	private int boardColor = 4;
 	private Color titleColor;
-	private Font titleFont;
-	private Font font;
+	private BitmapFont font;
 	private int currentChoice;
 	public OptionsState(GameStateManager gsm){
 		this.gsm = gsm;
@@ -39,34 +43,29 @@ public class OptionsState extends GameState {
 		optionsColor.put("Green", Color.GREEN);
 		optionsColor.put("Pink", Color.PINK);
 		optionsColor.put("Black", Color.BLACK);
-		try{
-			titleColor = new Color (128, 0, 0);
-			titleFont = new Font("Fixedsys", Font.TRUETYPE_FONT, (56));
-			font = new Font("Fixedsys", Font.TRUETYPE_FONT, (32));
-		}catch(Exception e){e.printStackTrace();}
+		try {
+			titleColor = new Color (0x800000FF);
+			//TODO: declare fonts
+		} catch(Exception e) { e.printStackTrace(); }
 
 	}
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void update() {
-
 	}
 
 	@Override
-	public void draw(Graphics2D g) {
+	public void draw(ShapeRenderer g, SpriteBatch sb) {
 		g.setColor(Color.WHITE);
-		g.fillRect(0, 0, TicTacToe.WIDTH, TicTacToe.HEIGHT);
-		g.setColor(titleColor);
-		g.setFont(titleFont);
-		FontMetrics fm = g.getFontMetrics();
-		int x = ((TicTacToe.WIDTH - fm.stringWidth("Options")) / 2);
-		g.drawString("Options", x, fm.getAscent()+(60));
-		g.setFont(font);
+		g.set(ShapeRenderer.ShapeType.Filled);
+		g.rect(0, 0, TicTacToe.WIDTH, TicTacToe.HEIGHT);
+		sb.setColor(titleColor);
+        GlyphLayout opt = new GlyphLayout(font, "Options");
+		float x = (TicTacToe.WIDTH - opt.width) / 2;
+		font.draw(sb, opt, x, opt.height+60);
 		for(int i = 0; i < options.length; i++){
 			if(i==currentChoice){
 				g.setColor(Color.DARK_GRAY);
@@ -76,23 +75,23 @@ public class OptionsState extends GameState {
 			
 			switch(i){
 			case 0:
-				g.drawString((String) optionsColor.keySet().toArray()[xColor], (400), ((200 + i*60)));
+				font.draw(sb, (String) optionsColor.keySet().toArray()[xColor], (400), ((200 + i*60)));
 				break;
 			case 1:
-				g.drawString(xPic, (400), ((200 + i*60)));
+				font.draw(sb, xPic, (400), ((200 + i*60)));
 				break;
 			case 2:
-				g.drawString((String) optionsColor.keySet().toArray()[oColor], (400), ((200 + i*60)));
+				font.draw(sb, (String) optionsColor.keySet().toArray()[oColor], (400), ((200 + i*60)));
 				break;
 			case 3:
-				g.drawString(oPic, (400), ((200 + i*60)));
+				font.draw(sb, oPic, (400), ((200 + i*60)));
 				break;
 			case 4:
-				g.drawString((String) optionsColor.keySet().toArray()[boardColor], (400), ((200 + i*60)));
+				font.draw(sb, (String) optionsColor.keySet().toArray()[boardColor], (400), ((200 + i*60)));
 				break;
 
 			}
-			g.drawString(options[i], (150), ((200 + i*60)));
+			font.draw(sb, options[i], (150), ((200 + i*60)));
 		}
 
 	}
@@ -148,38 +147,41 @@ public class OptionsState extends GameState {
 	}
 
 	@Override
-	public void keyPressed(int k) {
+	public boolean keyPressed(int k) {
 		if(k == KeyEvent.VK_ENTER){
 			select(currentChoice);
+			return true;
 		}
 		if(k==KeyEvent.VK_DOWN){
 			currentChoice = (currentChoice+1)%options.length;
+            return true;
 		}
 		if(k==KeyEvent.VK_UP){
 			currentChoice = (currentChoice+options.length-1)%options.length;
+            return true;
 		}
+        return false;
 	}
-	@Override
-	public void keyReleased(int k) {
-		// TODO Auto-generated method stub
 
-	}
 	@Override
-	public void mouseReleased(Point click) {
-		// TODO Auto-generated method stub
-		if(click.y >= (160) && click.y <= ((160 + options.length*60))&&click.x>=(150)){
-			select((click.y-160)/60);
-		}
+	public boolean keyReleased(int k) {
+	    return false;
 	}
-	@Override
-	public void mouseClicked(Point click) {
-		// TODO Auto-generated method stub
 
+	@Override
+	public boolean mouseReleased(int x, int y) {
+		if(y >= (160) && y <= ((160 + options.length*60)) && x>=(150)){
+			select((y-160)/60);
+			return true;
+		}
+		return false;
 	}
 	@Override
-	public void mouseMoved(MouseEvent e) {
-		if(e.getY() >= (160) && e.getY() <= (160 + options.length*60)&&e.getX()>=(150)){
-			currentChoice = ((e.getY()-(160))/(60));
+	public boolean mouseMoved(int x, int y) {
+		if(y >= (160) && y <= (160 + options.length*60)&&x>=(150)){
+			currentChoice = ((x-(160))/(60));
+			return true;
 		}
+		return false;
 	}
 }
