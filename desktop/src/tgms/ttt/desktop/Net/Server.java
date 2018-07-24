@@ -1,10 +1,14 @@
-package tgms.ttt.Net;
+package tgms.ttt.desktop.Net;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class Server extends Connection {
+import tgms.ttt.Net.Connection;
+import tgms.ttt.Net.ThreadedConnection;
+import tgms.ttt.SocketConnection;
+
+public class Server extends SocketConnection, implements ThreadedConnection {
     static ServerSocket s;
 
     public Server(String username, int port) throws IOException {
@@ -17,7 +21,6 @@ public class Server extends Connection {
     public void getInput2(String s) {
     }
     
-    @Override
     public void run() {
     	try {
 	        Socket sock = s.accept();
@@ -25,7 +28,7 @@ public class Server extends Connection {
 			playerNum = (int) (Math.random() * 2) + 1;
 	        out.writeUTF("turn:" + (playerNum == 1 ? 2 : 1));
 	        connected = true;
-	        run(sock);
+	        start(sock);
     	} catch (Exception e1) {
 			e1.printStackTrace();
 		}

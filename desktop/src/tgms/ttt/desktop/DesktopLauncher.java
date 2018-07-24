@@ -9,6 +9,6 @@ public class DesktopLauncher {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.height = 720;
 		config.width = 720;
-		new LwjglApplication(new TicTacToe(config.width, config.height), config);
+		new LwjglApplication(new TicTacToe(), config);
 	}
 }

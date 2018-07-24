@@ -4,15 +4,11 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.GridPoint2;
 
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import tgms.ttt.Net.Connection;
+import tgms.ttt.desktop.Net.Connection;
 public class GameStateManager implements InputProcessor {
 	private GameState[] gameStates;
 	private int currentState;

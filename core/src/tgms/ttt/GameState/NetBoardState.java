@@ -1,10 +1,9 @@
 package tgms.ttt.GameState;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.Point;
 
 import tgms.ttt.Main.GamePanel;
-import tgms.ttt.Net.Connection;
+import tgms.ttt.desktop.Net.Connection;
 
 public class NetBoardState extends BoardState {
 	private Connection conn;

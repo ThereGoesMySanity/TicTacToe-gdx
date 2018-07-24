@@ -1,9 +1,12 @@
-package tgms.ttt.Net;
+package tgms.ttt.desktop.Net;
 
 import java.io.IOException;
 import java.net.Socket;
 
-public class Client extends Connection {
+import tgms.ttt.Net.Connection;
+import tgms.ttt.Net.ThreadedConnection;
+
+public class Client extends ThreadedConnection {
 	Socket conn;
     public Client(String username, String host, int port)
             throws IOException {
@@ -16,7 +19,7 @@ public class Client extends Connection {
     public void run() {
     	try {
     		init(conn);
-			run(conn);
+			start(conn);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

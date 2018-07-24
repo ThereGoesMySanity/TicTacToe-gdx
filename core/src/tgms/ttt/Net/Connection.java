@@ -1,37 +1,15 @@
 package tgms.ttt.Net;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.Socket;
-
-import javax.swing.JOptionPane;
 
 import tgms.ttt.GameState.BoardState;
 
-public abstract class Connection extends Thread {
+public abstract class Connection implements ConnectionBase {
 	public static int DEFAULT_PORT = 5435;
-	DataInputStream in;
-	DataOutputStream out;
 	String user, userTwo;
 	BoardState b;
-	int playerNum;
-	boolean connected = false;
-
-	public static Connection createConnection() throws IOException {
-		String[] values = {"Host", "Connect"};
-		String value = (String)JOptionPane.showInputDialog(null, 
-				"Host server or connect to server?", 
-				"Connection", JOptionPane.INFORMATION_MESSAGE, null, values, values[0]);
-		String player = JOptionPane.showInputDialog("Enter name:");
-		if (value.equals("Host")) {
-			return new Server(player, DEFAULT_PORT);
-		} else if (value.equals("Connect")) {
-			String ipaddr = JOptionPane.showInputDialog("Enter IP to connect to:");
-			return new Client(player, ipaddr, DEFAULT_PORT);
-		}
-		return null;
-	}
+	protected int playerNum;
+	protected boolean connected = false;
 
 	public String getPlayerName() {
 		return userTwo;
@@ -45,28 +23,12 @@ public abstract class Connection extends Thread {
 		this.playerNum = num;
 	}
 
-	public Connection(String username)
-			throws IOException {
+	public Connection(String username) {
 		user = username;
 	}
 
 	public boolean connected() {
 		return connected;
-	}
-
-	public void init(Socket s) throws IOException {
-		in = new DataInputStream(s.getInputStream());
-		out = new DataOutputStream(s.getOutputStream());
-	}
-
-	public void run(Socket s) throws IOException, InterruptedException {
-		out.writeUTF("user:" + user);
-		while (true) {
-			if (in.available() > 0) {
-				getInput();
-			}
-			sleep(100);
-		}
 	}
 
 	public void setBoardState(BoardState b) {
@@ -75,18 +37,15 @@ public abstract class Connection extends Thread {
 
 	public void makeMove(int x, int y) {
 		if (playerNum == b.getTurn()) {
-			try {
-				out.writeUTF("move:" + x + "," + y);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+            send("move:" + x + "," + y);
 		}
 	}
 
-	public void getInput() throws IOException {
+	@Override
+	public void getInput(){
 		String s = "";
-		while (in.available() > 0) {
-			s += in.readUTF();
+		while (available() > 0) {
+			s += read();
 		}
 		getInput2(s);
 		if (s.startsWith("user:")) {
@@ -98,6 +57,5 @@ public abstract class Connection extends Thread {
 						Integer.parseInt(m[1]));
 		}
 	}
-
 	public abstract void getInput2(String s);
 }
