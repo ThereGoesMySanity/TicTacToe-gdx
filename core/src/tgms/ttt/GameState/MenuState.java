@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
+import tgms.ttt.PlatformInterfaces.Platform;
 import tgms.ttt.TicTacToe;
 
 public class MenuState extends GameState {
@@ -24,7 +25,7 @@ public class MenuState extends GameState {
 
 	@Override
 	public void init(){
-	    if (gsm.getOnline().supported()) {
+	    if (gsm.platform().isSupported(Platform.Features.ONLINE)) {
             options = new String[]{
                     "Start Local",
                     "Start Online",
@@ -60,21 +61,16 @@ public class MenuState extends GameState {
 			font.draw(sb, options[i], getMenuX(), getMenuY() + (i * getMenuSpacing()));
 		}
 	}
-	private void select(int choice){
-		switch(choice){
-		case 0:
-			gsm.setState(GameStateManager.BOARDSTATE);
-			break;
-		case 1:
-			gsm.setState(GameStateManager.BOARDSTATE_NET);
-			break;
-		case 2:
-			gsm.setState(GameStateManager.OPTIONSSTATE);
-			break;
-		case 3:
-		    //TODO: be snarky
-			break;
-		case 4:
+	private void select(String c){
+	    if (c.equals("Start") || c.equals("Start Local")) {
+            gsm.setState(GameStateManager.BOARDSTATE);
+        } else if (c.equals("Start Online")) {
+            gsm.setState(GameStateManager.BOARDSTATE_NET);
+        } else if (c.equals("Options")) {
+            gsm.setState(GameStateManager.OPTIONSSTATE);
+        }
+        //TODO: be snarky
+		else if (c.equals("Quit")) {
 			System.exit(0);
 		}
 	}
@@ -90,7 +86,7 @@ public class MenuState extends GameState {
 	
 	public boolean keyPressed(int k){
 		if(k == Input.Keys.ENTER){
-			select(currentChoice);
+			select(options[currentChoice]);
 		}
 		if(k==Input.Keys.DOWN){
 			currentChoice = (currentChoice+1)%options.length;
@@ -110,7 +106,7 @@ public class MenuState extends GameState {
 		if(y >= getMenuY() - getMenuSpacing()
                 && y <= getMenuY() + options.length * getMenuSpacing()
 				&& x >= getMenuX()){
-			select(currentChoice);
+			select(options[currentChoice]);
 			return true;
 		}
 		return false;
@@ -122,7 +118,8 @@ public class MenuState extends GameState {
 
 	@Override
 	public boolean mouseMoved(int x, int y) {
-		if(y >= getMenuY() - getMenuSpacing() && y <= getMenuY() + options.length * getMenuSpacing()
+		if(y >= getMenuY() - getMenuSpacing()
+                && y <= getMenuY() + options.length * getMenuSpacing()
 				&& x >= getMenuX()){
 			currentChoice = (y - getMenuY() + getMenuSpacing()) / getMenuSpacing();
 			return true;

@@ -17,7 +17,7 @@ public class GameStateManager implements InputProcessor {
 	private GameState[] gameStates;
 	private int currentState;
 	public String WIN;
-	public static final int NUMGAMESTATES = 5;
+	private static final int NUMGAMESTATES = 5;
 	
 	public static final int MENUSTATE = 0;
 	public static final int BOARDSTATE = 1;
@@ -47,7 +47,7 @@ public class GameStateManager implements InputProcessor {
 			gameStates[state] = new BoardState(this, 3, 3);
 		}
 		if(state == BOARDSTATE_NET){
-            Connection c = getOnline().getConnection();
+            Connection c = platform.getOnline().getConnection();
             if (c != null) {
                 gameStates[BOARDSTATE_NET] = new NetBoardState(this, c);
             } else {
@@ -123,11 +123,7 @@ public class GameStateManager implements InputProcessor {
 		if(gameStates[currentState] != null) gameStates[currentState].draw(s, sb);
 	}
 
-	public OSQuery getOS() {
-	    return platform.getOS();
-    }
-
-    public Online getOnline() {
-        return platform.getOnline();
+    public Platform platform() {
+        return platform;
     }
 }

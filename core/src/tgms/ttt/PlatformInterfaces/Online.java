@@ -4,6 +4,6 @@ import java.io.IOException;
 
 import tgms.ttt.Net.Connection;
 
-public interface Online extends Supportable {
+public interface Online {
     Connection getConnection();
 }
