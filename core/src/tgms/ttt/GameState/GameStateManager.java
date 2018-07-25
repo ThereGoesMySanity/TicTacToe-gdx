@@ -2,13 +2,17 @@ package tgms.ttt.GameState;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import tgms.ttt.desktop.Net.Connection;
+import tgms.ttt.Net.Connection;
+import tgms.ttt.PlatformInterfaces.OSQuery;
+import tgms.ttt.PlatformInterfaces.Online;
+import tgms.ttt.PlatformInterfaces.Platform;
+
 public class GameStateManager implements InputProcessor {
 	private GameState[] gameStates;
 	private int currentState;
@@ -24,10 +28,13 @@ public class GameStateManager implements InputProcessor {
 	public Color xColor = Color.RED;
 	public Color oColor = Color.BLUE;
 	public Color boardColor = Color.BLACK;
-	public BufferedImage xImage = null;
-	public BufferedImage oImage = null;
+	public Texture xImage = null;
+	public Texture oImage = null;
+
+    private Platform platform;
 	
-	public GameStateManager(){
+	public GameStateManager(Platform p){
+	    platform = p;
 		gameStates = new GameState[NUMGAMESTATES];
 		currentState = MENUSTATE;
 		loadState(currentState);
@@ -40,19 +47,13 @@ public class GameStateManager implements InputProcessor {
 			gameStates[state] = new BoardState(this, 3, 3);
 		}
 		if(state == BOARDSTATE_NET){
-			try {
-				Connection c = Connection.createConnection();
-				if (c != null) {
-					gameStates[BOARDSTATE_NET] = new NetBoardState(this, c);
-				} else {
-					setState(MENUSTATE);
-				}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				setState(MENUSTATE);
-			}
-		}
+            Connection c = getOnline().getConnection();
+            if (c != null) {
+                gameStates[BOARDSTATE_NET] = new NetBoardState(this, c);
+            } else {
+                setState(MENUSTATE);
+            }
+        }
 		if(state == OPTIONSSTATE){
 			gameStates[state] = new OptionsState(this);
 		}
@@ -72,15 +73,13 @@ public class GameStateManager implements InputProcessor {
 	}
 
     @Override
-    public boolean keyDown(int k) {
-        if(gameStates[currentState]!=null) return gameStates[currentState].keyPressed(k);
+    public boolean keyDown(int keycode) {
         return false;
     }
 
     @Override
     public boolean keyUp(int k) {
-        if(gameStates[currentState]!=null) return gameStates[currentState].keyReleased(k);
-        return false;
+        return gameStates[currentState] != null && gameStates[currentState].keyReleased(k);
     }
 
     @Override
@@ -95,10 +94,9 @@ public class GameStateManager implements InputProcessor {
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        if(gameStates[currentState]!=null && button == Input.Buttons.LEFT) {
-            return gameStates[currentState].mouseReleased(screenX, screenY);
-        }
-        return false;
+        return gameStates[currentState] != null
+                && button == Input.Buttons.LEFT
+                && gameStates[currentState].mouseReleased(screenX, screenY);
     }
 
     @Override
@@ -108,11 +106,9 @@ public class GameStateManager implements InputProcessor {
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
-        if(gameStates[currentState]!=null) {
-            return gameStates[currentState].mouseMoved(screenX, screenY);
-        }
-        return false;
-    }
+		return gameStates[currentState] != null
+				&& gameStates[currentState].mouseMoved(screenX, screenY);
+	}
 
     @Override
     public boolean scrolled(int amount) {
@@ -126,7 +122,12 @@ public class GameStateManager implements InputProcessor {
 	public void draw(ShapeRenderer s, SpriteBatch sb){
 		if(gameStates[currentState] != null) gameStates[currentState].draw(s, sb);
 	}
-	public GameState getState(){
-		return gameStates[currentState];
-	}
+
+	public OSQuery getOS() {
+	    return platform.getOS();
+    }
+
+    public Online getOnline() {
+        return platform.getOnline();
+    }
 }

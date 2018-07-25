@@ -1,6 +1,7 @@
-package tgms.ttt;
+package tgms.ttt.Net.Socket;
 
-import java.io.DataInput;
+import com.badlogic.gdx.net.Socket;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -9,10 +10,15 @@ import tgms.ttt.Net.Connection;
 
 public abstract class SocketConnection extends Connection {
     DataInputStream in;
-    DataOutputStream out;
+    protected DataOutputStream out;
 
     public SocketConnection(String username) {
         super(username);
+    }
+
+    public void init(Socket s) {
+        in = new DataInputStream(s.getInputStream());
+        out = new DataOutputStream(s.getOutputStream());
     }
 
     @Override

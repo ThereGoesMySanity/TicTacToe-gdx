@@ -1,19 +1,13 @@
 package tgms.ttt.GameState;
 
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.GridPoint2;
 
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics2D;
-import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
 import java.util.LinkedHashMap;
-import java.awt.event.KeyEvent;
+
 import tgms.ttt.TicTacToe;
 
 public class OptionsState extends GameState {
@@ -30,13 +24,12 @@ public class OptionsState extends GameState {
 	private int oColor = 1;
 	private String xPic = "None";
 	private String oPic = "None";
-	private BufferedImage xImage;
-	private BufferedImage oImage;
+
 	private int boardColor = 4;
+
 	private Color titleColor;
-	private BitmapFont font;
 	private int currentChoice;
-	public OptionsState(GameStateManager gsm){
+	OptionsState(GameStateManager gsm){
 		this.gsm = gsm;
 		optionsColor.put("Red", Color.RED);
 		optionsColor.put("Blue", Color.BLUE);
@@ -148,19 +141,16 @@ public class OptionsState extends GameState {
 
 	@Override
 	public boolean keyPressed(int k) {
-		if(k == KeyEvent.VK_ENTER){
+		if(k == Input.Keys.ENTER){
 			select(currentChoice);
-			return true;
 		}
-		if(k==KeyEvent.VK_DOWN){
+		if(k == Input.Keys.DOWN){
 			currentChoice = (currentChoice+1)%options.length;
-            return true;
 		}
-		if(k==KeyEvent.VK_UP){
+		if(k == Input.Keys.UP){
 			currentChoice = (currentChoice+options.length-1)%options.length;
-            return true;
 		}
-        return false;
+        return true;
 	}
 
 	@Override

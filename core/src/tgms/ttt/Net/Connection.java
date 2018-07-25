@@ -1,7 +1,5 @@
 package tgms.ttt.Net;
 
-import java.io.IOException;
-
 import tgms.ttt.GameState.BoardState;
 
 public abstract class Connection implements ConnectionBase {
@@ -42,7 +40,7 @@ public abstract class Connection implements ConnectionBase {
 	}
 
 	@Override
-	public void getInput(){
+	public void handleInput(){
 		String s = "";
 		while (available() > 0) {
 			s += read();

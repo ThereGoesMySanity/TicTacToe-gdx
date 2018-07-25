@@ -1,53 +1,63 @@
 package tgms.ttt.GameState;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.event.MouseEvent;
-import javax.swing.JOptionPane;
-import java.awt.event.KeyEvent;
-import tgms.ttt.Main.GamePanel;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
-public class MenuState extends GameState{
+import tgms.ttt.TicTacToe;
+
+public class MenuState extends GameState {
 
 	private int currentChoice = 0;
-	private String[] options = {
-		"Start Local",
-		"Start Online",
-		"Options",
-		"Help",
-		"Quit"
-	};
+	private String[] options;
 	private Color titleColor;
-	private Font titleFont;
-	public MenuState(GameStateManager gsm){
+
+	MenuState(GameStateManager gsm){
 		this.gsm = gsm;
 		try {
-			titleColor = new Color (128, 0, 0);
-			titleFont = new Font("Fixedsys", Font.TRUETYPE_FONT, 56);
+			titleColor = new Color (0x800000FF);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
-	public void init(){}
-	public void draw(Graphics2D g){
-		g.setColor(Color.WHITE);
-		g.fillRect(0, 0, TicTacToe.WIDTH, TicTacToe.HEIGHT);
-		g.setColor(titleColor);
-		g.setFont(titleFont);
-		FontMetrics fm = g.getFontMetrics();
-		int x = ((TicTacToe.WIDTH - fm.stringWidth("Tic-Tac-Toe")) / 2);
-		int y = fm.getHeight();
-		g.drawString("Tic-Tac-Toe", x, y+32);
-		g.setFont(titleFont);
+
+	@Override
+	public void init(){
+	    if (gsm.getOnline().supported()) {
+            options = new String[]{
+                    "Start Local",
+                    "Start Online",
+                    "Options",
+                    "Help",
+                    "Quit"
+            };
+        } else {
+            options = new String[]{
+                    "Start",
+                    "Options",
+                    "Help",
+                    "Quit"
+            };
+        }
+    }
+
+	@Override
+	public void draw(ShapeRenderer s, SpriteBatch sb){
+		s.setColor(Color.WHITE);
+		s.set(ShapeRenderer.ShapeType.Filled);
+		s.rect(0, 0, TicTacToe.WIDTH, TicTacToe.HEIGHT);
+		sb.setColor(titleColor);
+        GlyphLayout title = new GlyphLayout(font, "Tic-Tac-Toe");
+		float x = ((TicTacToe.WIDTH - title.width) / 2);
+		font.draw(sb, title, x, title.height+32);
 		for(int i = 0; i < options.length; i++){
 			if(i==currentChoice){
-				g.setColor(Color.DARK_GRAY);
+				sb.setColor(Color.DARK_GRAY);
 			}else{
-				g.setColor(Color.LIGHT_GRAY);
+				sb.setColor(Color.LIGHT_GRAY);
 			}
-			g.drawString(options[i], getMenuX(), getMenuY() + (i * getMenuSpacing()));
+			font.draw(sb, options[i], getMenuX(), getMenuY() + (i * getMenuSpacing()));
 		}
 	}
 	private void select(int choice){
@@ -62,7 +72,7 @@ public class MenuState extends GameState{
 			gsm.setState(GameStateManager.OPTIONSSTATE);
 			break;
 		case 3:
-			JOptionPane.showConfirmDialog(null, "It's tic tac toe that expands infinitely.\nNo explanation needed.", "You don't need help.", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+		    //TODO: be snarky
 			break;
 		case 4:
 			System.exit(0);
@@ -78,41 +88,45 @@ public class MenuState extends GameState{
 		return 60;
 	}
 	
-	public void keyPressed(int k){
-		if(k == KeyEvent.VK_ENTER){
+	public boolean keyPressed(int k){
+		if(k == Input.Keys.ENTER){
 			select(currentChoice);
 		}
-		if(k==KeyEvent.VK_DOWN){
+		if(k==Input.Keys.DOWN){
 			currentChoice = (currentChoice+1)%options.length;
 		}
-		if(k==KeyEvent.VK_UP){
+		if(k==Input.Keys.UP){
 			currentChoice = (currentChoice+options.length-1)%options.length;
 		}
-	}
-	public void keyReleased(int k){}
+        return true;
+    }
+
 	@Override
-	public void mouseReleased(GridPoint2 click) {
+	public boolean keyReleased(int k) { return false; }
+
+	@Override
+	public boolean mouseReleased(int x, int y) {
 		// TODO Auto-generated method stub
-		if(click.y >= getMenuY() - getMenuSpacing() && click.y <= getMenuY() + options.length * getMenuSpacing()
-				&& click.x >= getMenuX()){
+		if(y >= getMenuY() - getMenuSpacing()
+                && y <= getMenuY() + options.length * getMenuSpacing()
+				&& x >= getMenuX()){
 			select(currentChoice);
+			return true;
 		}
+		return false;
 	}
-	@Override
-	public void mouseClicked(GridPoint2 click) {
-		// TODO Auto-generated method stub
-		
-	}
+
 	@Override
 	public void update() {
-		// TODO Auto-generated method stub
-		
 	}
+
 	@Override
-	public void mouseMoved(MouseEvent e) {
-		if(e.getY() >= getMenuY() - getMenuSpacing() && e.getY() <= getMenuY() + options.length * getMenuSpacing()
-				&& e.getX() >= getMenuX()){
-			currentChoice = (e.getY() - getMenuY() + getMenuSpacing()) / getMenuSpacing();
+	public boolean mouseMoved(int x, int y) {
+		if(y >= getMenuY() - getMenuSpacing() && y <= getMenuY() + options.length * getMenuSpacing()
+				&& x >= getMenuX()){
+			currentChoice = (y - getMenuY() + getMenuSpacing()) / getMenuSpacing();
+			return true;
 		}
+		return false;
 	}
 }

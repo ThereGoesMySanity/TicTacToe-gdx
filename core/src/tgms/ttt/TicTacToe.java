@@ -11,12 +11,20 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import java.awt.DisplayMode;
 
 import tgms.ttt.GameState.GameStateManager;
+import tgms.ttt.PlatformInterfaces.OSQuery;
+import tgms.ttt.PlatformInterfaces.Online;
+import tgms.ttt.PlatformInterfaces.Platform;
 
 public class TicTacToe extends ApplicationAdapter {
-    SpriteBatch batch;
-    ShapeRenderer shape;
-	GameStateManager gsm;
+    private SpriteBatch batch;
+    private ShapeRenderer shape;
+    private GameStateManager gsm;
+	private Platform platform;
 	public static int WIDTH, HEIGHT;
+
+	public TicTacToe(Platform p) {
+	    platform = p;
+    }
 
 	@Override
 	public void create () {
@@ -25,6 +33,7 @@ public class TicTacToe extends ApplicationAdapter {
 	    HEIGHT = m.height;
 		batch = new SpriteBatch();
 		shape = new ShapeRenderer();
+		gsm = new GameStateManager(platform);
 	}
 
 	@Override

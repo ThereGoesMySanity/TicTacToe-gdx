@@ -1,16 +1,12 @@
 package tgms.ttt.GameState;
 
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.GridPoint2;
-
-import java.awt.Point;
-import java.awt.event.MouseEvent;
 
 public abstract class GameState {
-	protected GameStateManager gsm;
+    BitmapFont font;
+	GameStateManager gsm;
 	public abstract void init();
 	public abstract void update();
 	public abstract void draw(ShapeRenderer s, SpriteBatch sb);

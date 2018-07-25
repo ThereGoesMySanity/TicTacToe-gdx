@@ -1,16 +1,17 @@
 package tgms.ttt.GameState;
 
 import com.badlogic.gdx.graphics.Color;
-import java.awt.FontMetrics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
-import tgms.ttt.Main.GamePanel;
+import java.awt.event.KeyEvent;
+
+import tgms.ttt.TicTacToe;
+
 
 public class GameOver extends GameState {
-	
+    //TODO: A lot
 	public GameOver(GameStateManager gsm){
 		this.gsm = gsm;
 	}
@@ -20,34 +21,42 @@ public class GameOver extends GameState {
 
 	public void update() {}
 
-	public void draw(Graphics2D g) {
-		FontMetrics fm = g.getFontMetrics();
-        int x = ((TicTacToe.WIDTH - fm.stringWidth("Game Over")) / 2);
-        int x2 = ((TicTacToe.WIDTH - fm.stringWidth(gsm.WIN + " Wins")) / 2);
-        g.setColor(Color.GREEN);
-		g.drawString("Game Over", x, 32);
-		g.drawString(gsm.WIN + " Wins", x2, 128);
+	@Override
+	public void draw(ShapeRenderer s, SpriteBatch sb) {
+		GlyphLayout gameOver = new GlyphLayout(font, "Game Over");
+		GlyphLayout winner = new GlyphLayout(font, gsm.WIN + " Wins");
+        float x = ((TicTacToe.WIDTH - gameOver.width) / 2);
+        float x2 = ((TicTacToe.WIDTH - winner.width)/ 2);
+        sb.setColor(Color.GREEN);
+		font.draw(sb, winner, x, 32);
+		font.draw(sb, winner, x2, 128);
 	}
 
-	public void keyPressed(int k) {
-		System.out.println(k + " " + KeyEvent.VK_ENTER);
-		if (k == KeyEvent.VK_ENTER){
-			select();
-		}
-	}
+    @Override
+    public boolean keyPressed(int k) {
+        return false;
+    }
 
-	public void keyReleased(int k) {}
+    @Override
+	public boolean keyReleased(int k) {
+        if (k == KeyEvent.VK_ENTER){
+            select();
+            return true;
+        }
+        return false;
+    }
+
 	public void select(){
 		gsm.setState(GameStateManager.BOARDSTATE);
 	}
-	public void mouseClicked(GridPoint2 click) {
-		
-	}
+
 	@Override
-	public void mouseReleased(GridPoint2 click) {}
+	public boolean mouseReleased(int x, int y) {
+	    return false;
+    }
+
 	@Override
-	public void mouseMoved(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+	public boolean mouseMoved(int x, int y) {
+        return false;
+    }
 }
