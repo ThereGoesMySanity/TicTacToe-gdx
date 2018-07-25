@@ -1,6 +1,6 @@
 package tgms.ttt.Net;
 
-public class ConnectionThread implements Runnable {
+public class ConnectionThread extends Thread {
     private Connection conn;
     private int sleep;
 

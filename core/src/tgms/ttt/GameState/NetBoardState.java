@@ -3,10 +3,9 @@ package tgms.ttt.GameState;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
-import java.awt.Font;
-import java.awt.Graphics2D;
-
 import tgms.ttt.Net.Connection;
+import tgms.ttt.Net.ConnectionThread;
+import tgms.ttt.PlatformInterfaces.Platform;
 import tgms.ttt.TicTacToe;
 
 public class NetBoardState extends BoardState {
@@ -17,6 +16,17 @@ public class NetBoardState extends BoardState {
 		conn = c;
 		c.setBoardState(this);
 		conn.start();
+		if (gsm.platform().isSupported(Platform.Features.THREAD)) {
+			new ConnectionThread(conn).start();
+		}
+	}
+
+	@Override
+	public void update() {
+		if(!gsm.platform().isSupported(Platform.Features.THREAD)) {
+			conn.handleInput();
+		}
+		super.update();
 	}
 	
 	@Override

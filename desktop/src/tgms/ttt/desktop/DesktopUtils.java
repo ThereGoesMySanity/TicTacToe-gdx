@@ -15,8 +15,9 @@ import tgms.ttt.PlatformInterfaces.Platform;
 
 import static tgms.ttt.Net.Connection.DEFAULT_PORT;
 
-public class DesktopUtils extends Platform {
+class DesktopUtils extends Platform {
     DesktopUtils() {
+        threading = true;
         online = () -> {
             String[] values = {"Host", "Connect"};
             String value = (String) JOptionPane.showInputDialog(null,

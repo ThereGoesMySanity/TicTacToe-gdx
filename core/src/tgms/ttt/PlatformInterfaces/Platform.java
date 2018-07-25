@@ -1,9 +1,10 @@
 package tgms.ttt.PlatformInterfaces;
 
 public abstract class Platform {
-    public enum Features {ONLINE, OS};
+    public enum Features {ONLINE, OS, THREAD};
     protected Online online;
     protected OSQuery os;
+    protected boolean threading = true;
 
     public Online getOnline() {
         return online;
@@ -19,6 +20,8 @@ public abstract class Platform {
                 return os != null;
             case ONLINE:
                 return online != null;
+            case THREAD:
+                return threading;
             default:
                 return false;
         }

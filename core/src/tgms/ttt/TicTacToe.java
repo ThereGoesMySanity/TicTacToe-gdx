@@ -4,15 +4,10 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
-import java.awt.DisplayMode;
-
 import tgms.ttt.GameState.GameStateManager;
-import tgms.ttt.PlatformInterfaces.OSQuery;
-import tgms.ttt.PlatformInterfaces.Online;
 import tgms.ttt.PlatformInterfaces.Platform;
 
 public class TicTacToe extends ApplicationAdapter {
@@ -39,7 +34,6 @@ public class TicTacToe extends ApplicationAdapter {
 	@Override
 	public void render () {
 	    gsm.update();
-
 		Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();

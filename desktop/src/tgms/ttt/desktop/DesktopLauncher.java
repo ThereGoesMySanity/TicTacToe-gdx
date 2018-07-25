@@ -3,7 +3,6 @@ package tgms.ttt.desktop;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 
-import tgms.ttt.PlatformInterfaces.Platform;
 import tgms.ttt.TicTacToe;
 
 public class DesktopLauncher {

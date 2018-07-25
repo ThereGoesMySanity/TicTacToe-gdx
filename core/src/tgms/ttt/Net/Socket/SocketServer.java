@@ -21,8 +21,7 @@ public class SocketServer extends SocketConnection {
     	try {
 	        Socket sock = s.accept(null);
 			init(sock);
-			playerNum = (int) (Math.random() * 2) + 1;
-	        out.writeUTF("turn:" + (playerNum == 1 ? 2 : 1));
+			sendTurn();
 	        connected = true;
     	} catch (Exception e1) {
 			e1.printStackTrace();

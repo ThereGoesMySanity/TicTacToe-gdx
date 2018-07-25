@@ -6,11 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
-import java.io.IOException;
-
 import tgms.ttt.Net.Connection;
-import tgms.ttt.PlatformInterfaces.OSQuery;
-import tgms.ttt.PlatformInterfaces.Online;
 import tgms.ttt.PlatformInterfaces.Platform;
 
 public class GameStateManager implements InputProcessor {
@@ -39,27 +35,33 @@ public class GameStateManager implements InputProcessor {
 		currentState = MENUSTATE;
 		loadState(currentState);
 	}
-	private void loadState(int state){
+	private boolean loadState(int state){
 		if(state == MENUSTATE){
 			gameStates[state] = new MenuState(this);
+            return true;
 		}
 		if(state == BOARDSTATE){
 			gameStates[state] = new BoardState(this, 3, 3);
+            return true;
 		}
 		if(state == BOARDSTATE_NET){
             Connection c = platform.getOnline().getConnection();
             if (c != null) {
                 gameStates[BOARDSTATE_NET] = new NetBoardState(this, c);
+                return true;
             } else {
-                setState(MENUSTATE);
+                return false;
             }
         }
 		if(state == OPTIONSSTATE){
 			gameStates[state] = new OptionsState(this);
+            return true;
 		}
 		if(state == GAMEOVER){
 			gameStates[state] = new GameOver(this);
+            return true;
 		}
+        return false;
 	}
 
 	private void unloadState(int state){
@@ -67,9 +69,10 @@ public class GameStateManager implements InputProcessor {
 	}
 
 	public void setState(int state){
-		unloadState(currentState);
-		currentState = state;
-		loadState(state);
+        if (loadState(state)) {
+            unloadState(currentState);
+            currentState = state;
+        }
 	}
 
     @Override
