@@ -6,6 +6,8 @@ import android.content.Context;
 import android.os.Build;
 import android.widget.EditText;
 
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -17,6 +19,7 @@ import tgms.ttt.PlatformInterfaces.Platform;
 import static tgms.ttt.Net.Connection.DEFAULT_PORT;
 
 class AndroidUtils extends Platform {
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     AndroidUtils(Context c) {
         AlertDialog.Builder ab =

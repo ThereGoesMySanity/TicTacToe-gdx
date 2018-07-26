@@ -1,4 +1,6 @@
 package tgms.ttt.GameState;
+
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -10,22 +12,14 @@ import tgms.ttt.TicTacToe;
 
 public class MenuState extends GameState {
 
-	private int currentChoice = 0;
-	private String[] options;
-	private Color titleColor;
+    private int currentChoice = 0;
+    private String[] options;
+    private Color titleColor;
 
-	MenuState(GameStateManager gsm){
-		this.gsm = gsm;
-		try {
-			titleColor = new Color (0x800000FF);
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	@Override
-	public void init(){
-	    if (gsm.platform().isSupported(Platform.Features.ONLINE)) {
+    MenuState(GameStateManager gsm) {
+        super(gsm);
+        titleColor = new Color(0x800000FF);
+        if (gsm.platform().isSupported(Platform.Features.ONLINE)) {
             options = new String[]{
                     "Start Local",
                     "Start Online",
@@ -43,26 +37,26 @@ public class MenuState extends GameState {
         }
     }
 
-	@Override
-	public void draw(ShapeRenderer s, SpriteBatch sb){
-		s.setColor(Color.WHITE);
-		s.set(ShapeRenderer.ShapeType.Filled);
-		s.rect(0, 0, TicTacToe.WIDTH, TicTacToe.HEIGHT);
-		sb.setColor(titleColor);
+    @Override
+    public void draw(ShapeRenderer s, SpriteBatch sb) {
+        sb.begin();
+        font.setColor(titleColor);
         GlyphLayout title = new GlyphLayout(font, "Tic-Tac-Toe");
-		float x = ((TicTacToe.WIDTH - title.width) / 2);
-		font.draw(sb, title, x, title.height+32);
-		for(int i = 0; i < options.length; i++){
-			if(i==currentChoice){
-				sb.setColor(Color.DARK_GRAY);
-			}else{
-				sb.setColor(Color.LIGHT_GRAY);
-			}
-			font.draw(sb, options[i], getMenuX(), getMenuY() + (i * getMenuSpacing()));
-		}
-	}
-	private void select(String c){
-	    if (c.equals("Start") || c.equals("Start Local")) {
+        float x = ((TicTacToe.WIDTH - title.width) / 2);
+        font.draw(sb, title, x, title.height + 32);
+        for (int i = 0; i < options.length; i++) {
+            if (i == currentChoice) {
+                font.setColor(Color.DARK_GRAY);
+            } else {
+                font.setColor(Color.LIGHT_GRAY);
+            }
+            font.draw(sb, options[i], getMenuX(), getMenuY() + (i * getMenuSpacing()));
+        }
+        sb.end();
+    }
+
+    private void select(String c) {
+        if (c.equals("Start") || c.equals("Start Local")) {
             gsm.setState(GameStateManager.BOARDSTATE);
         } else if (c.equals("Start Online")) {
             gsm.setState(GameStateManager.BOARDSTATE_NET);
@@ -70,60 +64,65 @@ public class MenuState extends GameState {
             gsm.setState(GameStateManager.OPTIONSSTATE);
         }
         //TODO: be snarky
-		else if (c.equals("Quit")) {
-			System.exit(0);
-		}
-	}
-	private int getMenuX() {
-		return TicTacToe.WIDTH / 2;
-	}
-	private int getMenuY() {
-		return TicTacToe.HEIGHT / 3;
-	}
-	private int getMenuSpacing() {
-		return 60;
-	}
-	
-	public boolean keyPressed(int k){
-		if(k == Input.Keys.ENTER){
-			select(options[currentChoice]);
-		}
-		if(k==Input.Keys.DOWN){
-			currentChoice = (currentChoice+1)%options.length;
-		}
-		if(k==Input.Keys.UP){
-			currentChoice = (currentChoice+options.length-1)%options.length;
-		}
+        else if (c.equals("Quit")) {
+            Gdx.app.exit();
+        }
+    }
+
+    private int getMenuX() {
+        return TicTacToe.WIDTH / 2;
+    }
+
+    private int getMenuY() {
+        return TicTacToe.HEIGHT / 3;
+    }
+
+    private int getMenuSpacing() {
+        return 60;
+    }
+
+    public boolean keyPressed(int k) {
+        if (k == Input.Keys.ENTER) {
+            select(options[currentChoice]);
+        }
+        if (k == Input.Keys.DOWN) {
+            currentChoice = (currentChoice + 1) % options.length;
+        }
+        if (k == Input.Keys.UP) {
+            currentChoice = (currentChoice + options.length - 1) % options.length;
+        }
         return true;
     }
 
-	@Override
-	public boolean keyReleased(int k) { return false; }
+    @Override
+    public boolean keyReleased(int k) {
+        return false;
+    }
 
-	@Override
-	public boolean mouseReleased(int x, int y) {
-		// TODO Auto-generated method stub
-		if(y >= getMenuY() - getMenuSpacing()
+    @Override
+    public boolean mouseReleased(int x, int y) {
+        // TODO Auto-generated method stub
+        if (y >= getMenuY() - getMenuSpacing()
                 && y <= getMenuY() + options.length * getMenuSpacing()
-				&& x >= getMenuX()){
-			select(options[currentChoice]);
-			return true;
-		}
-		return false;
-	}
+                && x >= getMenuX()) {
+            select(options[currentChoice]);
+            return true;
+        }
+        return false;
+    }
 
-	@Override
-	public void update() {
-	}
+    @Override
+    public void update() {
+    }
 
-	@Override
-	public boolean mouseMoved(int x, int y) {
-		if(y >= getMenuY() - getMenuSpacing()
+    @Override
+    public boolean mouseMoved(int x, int y) {
+        if (y >= getMenuY() - getMenuSpacing()
                 && y <= getMenuY() + options.length * getMenuSpacing()
-				&& x >= getMenuX()){
-			currentChoice = (y - getMenuY() + getMenuSpacing()) / getMenuSpacing();
-			return true;
-		}
-		return false;
-	}
+                && x >= getMenuX()) {
+            currentChoice = (y - getMenuY() + getMenuSpacing()) / getMenuSpacing();
+            return true;
+        }
+        return false;
+    }
 }

@@ -6,12 +6,20 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 public abstract class GameState {
     BitmapFont font;
-	GameStateManager gsm;
-	public abstract void init();
-	public abstract void update();
-	public abstract void draw(ShapeRenderer s, SpriteBatch sb);
-	public abstract boolean keyPressed(int k);
-	public abstract boolean keyReleased(int k);
-	public abstract boolean mouseReleased(int x, int y);
-	public abstract boolean mouseMoved(int x, int y);
+    GameStateManager gsm;
+
+    public GameState(GameStateManager gsm) {
+        font = gsm.platform().getFont();
+        this.gsm = gsm;
+    }
+
+    public abstract void update();
+
+    public abstract void draw(ShapeRenderer s, SpriteBatch sb);
+
+    public abstract boolean keyReleased(int k);
+
+    public abstract boolean mouseReleased(int x, int y);
+
+    public abstract boolean mouseMoved(int x, int y);
 }
