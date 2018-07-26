@@ -12,7 +12,7 @@ import tgms.ttt.TicTacToe;
 
 public class GameOver extends GameState {
     //TODO: A lot
-    public GameOver(GameStateManager gsm) {
+    GameOver(GameStateManager gsm) {
         super(gsm);
     }
 
@@ -42,7 +42,7 @@ public class GameOver extends GameState {
         return false;
     }
 
-    public void select() {
+    private void select() {
         gsm.setState(GameStateManager.BOARDSTATE);
     }
 

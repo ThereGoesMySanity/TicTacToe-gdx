@@ -276,7 +276,7 @@ public class BoardState extends GameState {
         return true;
     }
 
-    public void updateOffset() {
+    private void updateOffset() {
         if (fullBoard.size() * TicTacToe.WIDTH > fullBoard.get(0).size() * TicTacToe.HEIGHT) {
             squareSize = TicTacToe.HEIGHT * 1.0f / fullBoard.size();
             offsetx = (TicTacToe.WIDTH - squareSize * fullBoard.get(0).size()) / 2;
@@ -297,7 +297,7 @@ public class BoardState extends GameState {
         //nothing to do
     }
 
-    public void updateBoard() {
+    private void updateBoard() {
         boolean full = true;
         for (int i = 0; i < fullBoard.size(); i++) {
             for (int j = 0; j < fullBoard.get(0).size(); j++) { //god this looks like such a mess, I know

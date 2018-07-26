@@ -56,16 +56,21 @@ public class MenuState extends GameState {
     }
 
     private void select(String c) {
-        if (c.equals("Start") || c.equals("Start Local")) {
-            gsm.setState(GameStateManager.BOARDSTATE);
-        } else if (c.equals("Start Online")) {
-            gsm.setState(GameStateManager.BOARDSTATE_NET);
-        } else if (c.equals("Options")) {
-            gsm.setState(GameStateManager.OPTIONSSTATE);
-        }
-        //TODO: be snarky
-        else if (c.equals("Quit")) {
-            Gdx.app.exit();
+        switch (c) {
+            case "Start":
+            case "Start Local":
+                gsm.setState(GameStateManager.BOARDSTATE);
+                break;
+            case "Start Online":
+                gsm.setState(GameStateManager.BOARDSTATE_NET);
+                break;
+            case "Options":
+                gsm.setState(GameStateManager.OPTIONSSTATE);
+                break;
+            //TODO: be snarky
+            case "Quit":
+                Gdx.app.exit();
+                break;
         }
     }
 
@@ -81,7 +86,8 @@ public class MenuState extends GameState {
         return 60;
     }
 
-    public boolean keyPressed(int k) {
+    @Override
+    public boolean keyReleased(int k) {
         if (k == Input.Keys.ENTER) {
             select(options[currentChoice]);
         }
@@ -92,11 +98,6 @@ public class MenuState extends GameState {
             currentChoice = (currentChoice + options.length - 1) % options.length;
         }
         return true;
-    }
-
-    @Override
-    public boolean keyReleased(int k) {
-        return false;
     }
 
     @Override

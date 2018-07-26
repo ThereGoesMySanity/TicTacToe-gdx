@@ -8,7 +8,7 @@ public abstract class GameState {
     BitmapFont font;
     GameStateManager gsm;
 
-    public GameState(GameStateManager gsm) {
+    GameState(GameStateManager gsm) {
         font = gsm.platform().getFont();
         this.gsm = gsm;
     }

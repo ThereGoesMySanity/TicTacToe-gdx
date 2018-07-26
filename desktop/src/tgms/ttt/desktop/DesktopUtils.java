@@ -6,10 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
-import tgms.ttt.PlatformInterfaces.OSQuery;
-import tgms.ttt.PlatformInterfaces.Online;
 import tgms.ttt.Net.Socket.SocketClient;
-import tgms.ttt.Net.Connection;
 import tgms.ttt.Net.Socket.SocketServer;
 import tgms.ttt.PlatformInterfaces.Platform;
 
