@@ -1,6 +1,6 @@
 package tgms.ttt.Net;
 
-public class ConnectionThread extends Thread {
+public class ConnectionThread implements Runnable {
     private Connection conn;
     private int sleep;
 
@@ -11,6 +11,7 @@ public class ConnectionThread extends Thread {
         conn = c;
         sleep = s;
     }
+    
     @Override
     public void run() {
         conn.start();

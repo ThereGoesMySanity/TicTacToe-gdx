@@ -1,5 +1,5 @@
-#Thu Jul 19 18:21:33 EDT 2018
-lastWarOutDir=/home/will/code/html/war
-warSrcDirIsOutput=false
 eclipse.preferences.version=1
+jarsExcludedFromWebInfLib=
+lastWarOutDir=/home/will/StudioProjects/TicTacToe-gdx/html/war/WEB-INF
 warSrcDir=webapp/
+warSrcDirIsOutput=false

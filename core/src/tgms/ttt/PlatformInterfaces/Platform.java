@@ -1,9 +1,6 @@
 package tgms.ttt.PlatformInterfaces;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 
 public abstract class Platform {
 
@@ -12,21 +9,10 @@ public abstract class Platform {
     public enum Features {ONLINE, OS, THREAD};
     protected Online online;
     protected OSQuery os;
-    protected boolean threading = true;
+    protected Threading thread;
     protected BitmapFont font;
 
-    public BitmapFont getFont() {
-        if (font == null) {
-            Gdx.app.debug("test", Gdx.files.internal("fonts/default.ttf").exists() + " font");
-            FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("fonts/default.ttf"));
-            FreeTypeFontParameter param = new FreeTypeFontParameter();
-            param.size = FONT_SIZE;
-            param.flip = true;
-            font = gen.generateFont(param);
-            gen.dispose();
-        }
-        return font;
-    }
+    public abstract BitmapFont getFont();
 
     public Online getOnline() {
         return online;
@@ -34,6 +20,10 @@ public abstract class Platform {
 
     public OSQuery getOS() {
         return os;
+    }
+    
+    public Threading getThread() {
+    	return thread;
     }
 
     public boolean isSupported(Features f) {
@@ -43,7 +33,7 @@ public abstract class Platform {
             case ONLINE:
                 return online != null;
             case THREAD:
-                return threading;
+                return thread != null;
             default:
                 return false;
         }

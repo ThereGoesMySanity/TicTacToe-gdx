@@ -31,7 +31,9 @@ public class TicTacToe extends ApplicationAdapter {
         camera = new OrthographicCamera(WIDTH, HEIGHT);
         camera.setToOrtho(true, WIDTH, HEIGHT);
         batch = new SpriteBatch();
+        batch.setProjectionMatrix(camera.combined);
         shape = new ShapeRenderer();
+        shape.setProjectionMatrix(camera.combined);
         shape.setAutoShapeType(true);
         gsm = new GameStateManager(platform);
         Gdx.input.setInputProcessor(gsm);
@@ -39,9 +41,6 @@ public class TicTacToe extends ApplicationAdapter {
 
     @Override
     public void render() {
-        camera.update();
-        batch.setProjectionMatrix(camera.combined);
-        shape.setProjectionMatrix(camera.combined);
         gsm.update();
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -52,5 +51,13 @@ public class TicTacToe extends ApplicationAdapter {
     public void dispose() {
         batch.dispose();
         shape.dispose();
+    }
+    
+    @Override
+    public void resize(int w, int h) {
+    	WIDTH = w;
+    	HEIGHT = h;
+    	camera.setToOrtho(true, WIDTH, HEIGHT);
+        camera.update();
     }
 }

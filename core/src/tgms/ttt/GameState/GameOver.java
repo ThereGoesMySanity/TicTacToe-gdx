@@ -1,11 +1,10 @@
 package tgms.ttt.GameState;
 
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-
-import java.awt.event.KeyEvent;
 
 import tgms.ttt.TicTacToe;
 
@@ -35,7 +34,7 @@ public class GameOver extends GameState {
 
     @Override
     public boolean keyReleased(int k) {
-        if (k == KeyEvent.VK_ENTER) {
+        if (k == Input.Keys.ENTER) {
             select();
             return true;
         }

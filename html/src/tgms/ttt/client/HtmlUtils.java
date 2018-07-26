@@ -20,7 +20,6 @@ class HtmlUtils extends Platform {
     }
 
     HtmlUtils() {
-        threading = false;
         online = () -> {
             String s = Window.prompt("Enter IP to connect to,"
                             + " or \"host\" if you are hosting.",

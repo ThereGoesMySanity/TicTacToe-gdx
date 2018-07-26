@@ -4,8 +4,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 import tgms.ttt.Net.Connection;
-import tgms.ttt.Net.ConnectionThread;
 import tgms.ttt.PlatformInterfaces.Platform;
+import tgms.ttt.Net.ConnectionThread;
 import tgms.ttt.TicTacToe;
 
 public class NetBoardState extends BoardState {
@@ -17,7 +17,7 @@ public class NetBoardState extends BoardState {
 		c.setBoardState(this);
 		conn.start();
 		if (gsm.platform().isSupported(Platform.Features.THREAD)) {
-			new ConnectionThread(conn).start();
+			gsm.platform().getThread().start(new ConnectionThread(conn));
 		}
 	}
 
