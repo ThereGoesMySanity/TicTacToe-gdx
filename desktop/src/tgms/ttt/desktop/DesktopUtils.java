@@ -9,9 +9,9 @@ import javax.swing.JOptionPane;
 
 import tgms.ttt.Net.Socket.SocketClient;
 import tgms.ttt.Net.Socket.SocketServer;
-import tgms.ttt.PlatformInterfaces.FreeTypeFontGenerator;
-import tgms.ttt.PlatformInterfaces.FreeTypeFontParameter;
 import tgms.ttt.PlatformInterfaces.Platform;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 
 import static tgms.ttt.Net.Connection.DEFAULT_PORT;
 

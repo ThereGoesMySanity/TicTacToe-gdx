@@ -1,23 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>Expanding Tic-Tac-Toe-desktop</name>
-	<comment></comment>
-	<projects/>
-	<natures>
-		<nature>org.eclipse.jdt.core.javanature</nature>
-	</natures>
+	<name>TicTacToe-gdx-desktop</name>
+	<comment>Project TicTacToe-gdx-desktop created by Buildship.</comment>
+	<projects>
+	</projects>
 	<buildSpec>
 		<buildCommand>
 			<name>org.eclipse.jdt.core.javabuilder</name>
-			<arguments/>
+			<arguments>
+			</arguments>
+		</buildCommand>
+		<buildCommand>
+			<name>org.eclipse.buildship.core.gradleprojectbuilder</name>
+			<arguments>
+			</arguments>
 		</buildCommand>
 	</buildSpec>
+	<natures>
+		<nature>org.eclipse.jdt.core.javanature</nature>
+		<nature>org.eclipse.buildship.core.gradleprojectnature</nature>
+	</natures>
 	<linkedResources>
 		<link>
 			<name>assets</name>
 			<type>2</type>
-			<location>PARENT-1-PROJECT_LOC/android/assets</location>
+			<locationURI>PARENT-1-PROJECT_LOC/android/assets</locationURI>
 		</link>
 	</linkedResources>
-	<filteredResources/>
 </projectDescription>
