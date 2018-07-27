@@ -27,7 +27,8 @@ public class BoardState extends GameState {
     private float squareSize;
 
     private int boardSize;
-    private int inARow;
+    //TODO
+//    private int inARow;
 
     private int mouseX, mouseY;
 
@@ -38,7 +39,7 @@ public class BoardState extends GameState {
     BoardState(GameStateManager gsm, int boardSize, int inARow) {
         super(gsm);
         this.boardSize = boardSize;
-        this.inARow = inARow;
+//        this.inARow = inARow;
         colorX = gsm.xColor;
         colorO = gsm.oColor;
         colorBoard = gsm.boardColor;

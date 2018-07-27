@@ -6,8 +6,6 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
-import java.util.LinkedHashMap;
-
 import tgms.ttt.TicTacToe;
 import tgms.ttt.GameState.GameStateManager.State;
 
@@ -20,7 +18,8 @@ public class OptionsState extends GameState {
             "Board color",
             "Back"
     };
-    private LinkedHashMap<String, Color> optionsColor = new LinkedHashMap<String, Color>();
+    private Color[] colors = {Color.RED, Color.BLUE, Color.GREEN, Color.PINK, Color.BLACK };
+    private String[] colorNames = { "Red", "Blue", "Green", "Pink", "Black" };
     private int xColor = 0;
     private int oColor = 1;
     private String xPic = "None";
@@ -32,11 +31,6 @@ public class OptionsState extends GameState {
     private int currentChoice;
     OptionsState(GameStateManager gsm){
         super(gsm);
-        optionsColor.put("Red", Color.RED);
-        optionsColor.put("Blue", Color.BLUE);
-        optionsColor.put("Green", Color.GREEN);
-        optionsColor.put("Pink", Color.PINK);
-        optionsColor.put("Black", Color.BLACK);
         try {
             titleColor = new Color (0x800000FF);
             //TODO: declare fonts
@@ -66,19 +60,19 @@ public class OptionsState extends GameState {
 
             switch(i){
             case 0:
-                font.draw(sb, (String) optionsColor.keySet().toArray()[xColor], (400), ((200 + i*60)));
+                font.draw(sb, colorNames[xColor], (400), ((200 + i*60)));
                 break;
             case 1:
                 font.draw(sb, xPic, (400), ((200 + i*60)));
                 break;
             case 2:
-                font.draw(sb, (String) optionsColor.keySet().toArray()[oColor], (400), ((200 + i*60)));
+                font.draw(sb, (String) colorNames[oColor], (400), ((200 + i*60)));
                 break;
             case 3:
                 font.draw(sb, oPic, (400), ((200 + i*60)));
                 break;
             case 4:
-                font.draw(sb, (String) optionsColor.keySet().toArray()[boardColor], (400), ((200 + i*60)));
+                font.draw(sb, (String) colorNames[boardColor], (400), ((200 + i*60)));
                 break;
 
             }
@@ -90,8 +84,9 @@ public class OptionsState extends GameState {
         switch(choice){
         case 0://xColor
             xColor++;
+            if (xColor == oColor) xColor++;
             xColor %=5;
-            gsm.xColor = optionsColor.get(optionsColor.keySet().toArray()[xColor]);
+            gsm.xColor = colors[xColor];
             break;
         /*
         case 1://xImage
@@ -109,8 +104,9 @@ public class OptionsState extends GameState {
         */
         case 2://oColor
             oColor++;
+            if (xColor == oColor) oColor++;
             oColor %=5;
-            gsm.oColor = optionsColor.get(optionsColor.keySet().toArray()[oColor]);
+            gsm.oColor = colors[oColor];
             break;
         /*
         case 3://oImage
@@ -129,7 +125,7 @@ public class OptionsState extends GameState {
         case 4://boardColor
             boardColor++;
             boardColor %=5;
-            gsm.boardColor = optionsColor.get(optionsColor.keySet().toArray()[boardColor]);
+            gsm.boardColor = colors[boardColor];
             break;
         case 5:
             gsm.setState(State.MENUSTATE);
