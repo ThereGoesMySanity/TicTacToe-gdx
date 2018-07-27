@@ -3,27 +3,26 @@ package tgms.ttt.GameState;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
-import tgms.ttt.Net.Connection;
-import tgms.ttt.PlatformInterfaces.Platform;
-import tgms.ttt.Net.ConnectionThread;
 import tgms.ttt.TicTacToe;
+import tgms.ttt.Net.Connection;
+import tgms.ttt.Net.ConnectionThread;
 
 public class NetBoardState extends BoardState {
 	private Connection conn;
 
-	NetBoardState(GameStateManager gsm, Connection c) {
+	NetBoardState(GameStateManager gsm)  {
 		super(gsm, 3, 3);
-		conn = c;
-		c.setBoardState(this);
+		conn = gsm.platform().online.getConnection();
+		conn.setBoardState(this);
 		conn.start();
-		if (gsm.platform().isSupported(Platform.Features.THREAD)) {
-			gsm.platform().getThread().start(new ConnectionThread(conn));
+		if (gsm.platform().thread != null) {
+			gsm.platform().thread.start(new ConnectionThread(conn));
 		}
 	}
 
 	@Override
 	public void update() {
-		if(!gsm.platform().isSupported(Platform.Features.THREAD)) {
+		if(gsm.platform().thread == null) {
 			conn.handleInput();
 		}
 		super.update();

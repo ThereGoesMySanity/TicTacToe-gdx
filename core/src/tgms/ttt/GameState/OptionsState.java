@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import java.util.LinkedHashMap;
 
 import tgms.ttt.TicTacToe;
+import tgms.ttt.GameState.GameStateManager.State;
 
 public class OptionsState extends GameState {
     private String[] options = {
@@ -131,7 +132,7 @@ public class OptionsState extends GameState {
             gsm.boardColor = optionsColor.get(optionsColor.keySet().toArray()[boardColor]);
             break;
         case 5:
-            gsm.setState(GameStateManager.MENUSTATE);
+            gsm.setState(State.MENUSTATE);
             break;
         }
     }

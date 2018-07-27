@@ -14,6 +14,7 @@ import com.badlogic.gdx.math.Vector2;
 import java.util.ArrayList;
 
 import tgms.ttt.TicTacToe;
+import tgms.ttt.GameState.GameStateManager.State;
 
 public class BoardState extends GameState {
     //0 = blank but part of board, 1 and 2 = X and O, 3 and 4 = completed X and O row, 5 = Not board
@@ -248,7 +249,7 @@ public class BoardState extends GameState {
             }
         }
         if (winner != 0) {
-            gsm.setState(GameStateManager.GAMEOVER);
+            gsm.setState(State.GAMEOVER);
         }
         s.end();
     }
@@ -256,7 +257,7 @@ public class BoardState extends GameState {
     @Override
     public boolean keyReleased(int k) {
         if (k == Input.Keys.R) {
-            gsm.setState(GameStateManager.BOARDSTATE);
+            gsm.setState(State.BOARDSTATE);
         }
         if (k == Input.Keys.ENTER) {
             makeMove(mouseX, mouseY);

@@ -6,21 +6,20 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
-import tgms.ttt.Net.Connection;
 import tgms.ttt.PlatformInterfaces.Platform;
 
 public class GameStateManager implements InputProcessor {
-	private GameState[] gameStates;
-	private int currentState;
+	private GameState currentState;
 	public String WIN;
-	private static final int NUMGAMESTATES = 5;
 	
-	public static final int MENUSTATE = 0;
-	public static final int BOARDSTATE = 1;
-	public static final int BOARDSTATE_NET = 2;
-	public static final int OPTIONSSTATE = 3;
-	public static final int GAMEOVER = 4;
-
+	public enum State { 
+		MENUSTATE,
+		BOARDSTATE,
+		BOARDSTATE_NET,
+		OPTIONSSTATE,
+		GAMEOVER
+	};
+	
 	public Color xColor = Color.RED;
 	public Color oColor = Color.BLUE;
 	public Color boardColor = Color.BLACK;
@@ -31,48 +30,28 @@ public class GameStateManager implements InputProcessor {
 	
 	public GameStateManager(Platform p){
 	    platform = p;
-		gameStates = new GameState[NUMGAMESTATES];
-		currentState = MENUSTATE;
-		loadState(currentState);
+		setState(State.MENUSTATE);
 	}
-	private boolean loadState(int state){
-		if(state == MENUSTATE){
-			gameStates[state] = new MenuState(this);
-            return true;
+	
+	private GameState loadState(State state){
+		switch(state) {
+			case MENUSTATE:
+				return new MenuState(this);
+			case BOARDSTATE:
+				return new BoardState(this, 3, 3);
+			case BOARDSTATE_NET:
+	            return new NetBoardState(this);
+			case OPTIONSSTATE:
+				return new OptionsState(this);
+			case GAMEOVER:
+				return new GameOver(this);
+			default:
+				return null;
 		}
-		if(state == BOARDSTATE){
-			gameStates[state] = new BoardState(this, 3, 3);
-            return true;
-		}
-		if(state == BOARDSTATE_NET){
-            Connection c = platform.getOnline().getConnection();
-            if (c != null) {
-                gameStates[BOARDSTATE_NET] = new NetBoardState(this, c);
-                return true;
-            } else {
-                return false;
-            }
-        }
-		if(state == OPTIONSSTATE){
-			gameStates[state] = new OptionsState(this);
-            return true;
-		}
-		if(state == GAMEOVER){
-			gameStates[state] = new GameOver(this);
-            return true;
-		}
-        return false;
 	}
 
-	private void unloadState(int state){
-		gameStates[state] = null;
-	}
-
-	public void setState(int state){
-        if (loadState(state)) {
-            unloadState(currentState);
-            currentState = state;
-        }
+	public void setState(State boardstate){
+        currentState = loadState(boardstate);
 	}
 
     @Override
@@ -82,7 +61,7 @@ public class GameStateManager implements InputProcessor {
 
     @Override
     public boolean keyUp(int k) {
-        return gameStates[currentState] != null && gameStates[currentState].keyReleased(k);
+        return currentState != null && currentState.keyReleased(k);
     }
 
     @Override
@@ -97,9 +76,9 @@ public class GameStateManager implements InputProcessor {
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        return gameStates[currentState] != null
+        return currentState != null
                 && button == Input.Buttons.LEFT
-                && gameStates[currentState].mouseReleased(screenX, screenY);
+                && currentState.mouseReleased(screenX, screenY);
     }
 
     @Override
@@ -109,8 +88,8 @@ public class GameStateManager implements InputProcessor {
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
-		return gameStates[currentState] != null
-				&& gameStates[currentState].mouseMoved(screenX, screenY);
+		return currentState != null
+				&& currentState.mouseMoved(screenX, screenY);
 	}
 
     @Override
@@ -119,11 +98,11 @@ public class GameStateManager implements InputProcessor {
     }
 
     public void update(){
-		if(gameStates[currentState]!=null) gameStates[currentState].update();
+		if(currentState != null) currentState.update();
 	}
 
 	public void draw(ShapeRenderer s, SpriteBatch sb){
-		if(gameStates[currentState] != null) gameStates[currentState].draw(s, sb);
+		if(currentState != null) currentState.draw(s, sb);
 	}
 
     public Platform platform() {

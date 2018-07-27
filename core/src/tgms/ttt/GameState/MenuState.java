@@ -7,8 +7,8 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
-import tgms.ttt.PlatformInterfaces.Platform;
 import tgms.ttt.TicTacToe;
+import tgms.ttt.GameState.GameStateManager.State;
 
 public class MenuState extends GameState {
 
@@ -19,7 +19,7 @@ public class MenuState extends GameState {
     MenuState(GameStateManager gsm) {
         super(gsm);
         titleColor = new Color(0x800000FF);
-        if (gsm.platform().isSupported(Platform.Features.ONLINE)) {
+        if (gsm.platform().online != null) {
             options = new String[]{
                     "Start Local",
                     "Start Online",
@@ -59,13 +59,13 @@ public class MenuState extends GameState {
         switch (c) {
             case "Start":
             case "Start Local":
-                gsm.setState(GameStateManager.BOARDSTATE);
+                gsm.setState(State.BOARDSTATE);
                 break;
             case "Start Online":
-                gsm.setState(GameStateManager.BOARDSTATE_NET);
+                gsm.setState(State.BOARDSTATE_NET);
                 break;
             case "Options":
-                gsm.setState(GameStateManager.OPTIONSSTATE);
+                gsm.setState(State.OPTIONSSTATE);
                 break;
             //TODO: be snarky
             case "Quit":

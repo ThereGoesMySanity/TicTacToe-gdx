@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 import tgms.ttt.TicTacToe;
+import tgms.ttt.GameState.GameStateManager.State;
 
 
 public class GameOver extends GameState {
@@ -42,7 +43,7 @@ public class GameOver extends GameState {
     }
 
     private void select() {
-        gsm.setState(GameStateManager.BOARDSTATE);
+        gsm.setState(State.BOARDSTATE);
     }
 
     @Override
