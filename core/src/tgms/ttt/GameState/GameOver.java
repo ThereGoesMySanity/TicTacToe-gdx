@@ -55,4 +55,9 @@ public class GameOver extends GameState {
     public boolean mouseMoved(int x, int y) {
         return false;
     }
+
+	@Override
+	public void onResize() {
+		// TODO Auto-generated method stub
+	}
 }

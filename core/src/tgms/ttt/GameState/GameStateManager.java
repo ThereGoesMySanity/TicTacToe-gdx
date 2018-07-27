@@ -104,6 +104,10 @@ public class GameStateManager implements InputProcessor {
 	public void draw(ShapeRenderer s, SpriteBatch sb){
 		if(currentState != null) currentState.draw(s, sb);
 	}
+	
+	public void onResize() {
+		if(currentState != null) currentState.onResize();
+	}
 
     public Platform platform() {
         return platform;

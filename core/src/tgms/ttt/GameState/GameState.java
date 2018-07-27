@@ -13,7 +13,7 @@ public abstract class GameState {
         this.gsm = gsm;
     }
 
-    public abstract void update();
+    public void update() {}
 
     public abstract void draw(ShapeRenderer s, SpriteBatch sb);
 
@@ -22,4 +22,6 @@ public abstract class GameState {
     public abstract boolean mouseReleased(int x, int y);
 
     public abstract boolean mouseMoved(int x, int y);
+    
+    public abstract void onResize();
 }

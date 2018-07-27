@@ -31,9 +31,9 @@ public class TicTacToe extends ApplicationAdapter {
         camera = new OrthographicCamera(WIDTH, HEIGHT);
         camera.setToOrtho(true, WIDTH, HEIGHT);
         batch = new SpriteBatch();
-        batch.setProjectionMatrix(camera.combined);
         shape = new ShapeRenderer();
-        shape.setProjectionMatrix(camera.combined);
+        batch.setProjectionMatrix(camera.combined);
+    	shape.setProjectionMatrix(camera.combined);
         shape.setAutoShapeType(true);
         gsm = new GameStateManager(platform);
         Gdx.input.setInputProcessor(gsm);
@@ -57,7 +57,10 @@ public class TicTacToe extends ApplicationAdapter {
     public void resize(int w, int h) {
     	WIDTH = w;
     	HEIGHT = h;
+    	Gdx.app.debug("test", w + " " + h);
     	camera.setToOrtho(true, WIDTH, HEIGHT);
-        camera.update();
+    	batch.setProjectionMatrix(camera.combined);
+    	shape.setProjectionMatrix(camera.combined);
+    	gsm.onResize();
     }
 }

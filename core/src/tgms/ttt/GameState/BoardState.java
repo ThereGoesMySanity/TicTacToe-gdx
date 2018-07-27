@@ -294,11 +294,6 @@ public class BoardState extends GameState {
         }
     }
 
-    @Override
-    public void update() {
-        //nothing to do
-    }
-
     private void updateBoard() {
         boolean full = true;
         for (int i = 0; i < fullBoard.size(); i++) {
@@ -493,4 +488,9 @@ public class BoardState extends GameState {
         }
         return true;
     }
+
+	@Override
+	public void onResize() {
+		updateOffset();
+	}
 }
