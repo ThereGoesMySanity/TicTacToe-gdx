@@ -10,19 +10,25 @@ public class Message implements Serializable {
 	 */
 	private static final long serialVersionUID = 2311602896746533892L;
 	public Player player;
-	public GridPoint2 move;
+	public int x, y;
 	
 	public Message() {
 		player = null;
-		move = null;
+		x = y = -1;
 	}
 	
 	public Message(String name) {
 		player = new Player(name);
-		move = null;
+		x = y = -1;
 	}
 	public Message(Player p, GridPoint2 m) {
 		player = p;
-		move = m;
+		x = m.x;
+		y = m.y;
+	}
+	public Message(Player p, int x, int y) {
+		player = p;
+		this.x = x;
+		this.y = y;
 	}
 }

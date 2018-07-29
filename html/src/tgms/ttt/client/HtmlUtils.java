@@ -21,8 +21,10 @@ class HtmlUtils extends Platform {
         	GameConnectionServiceConnection gcsc = new GameConnectionServiceConnection(user);
         	StringBuilder prompt = new StringBuilder("Select a user to connect to:\n");
         	for(String u : gcsc.getUsers()) {
-        		prompt.append(u);
-        		prompt.append('\n');
+        		if (!u.equals(gcsc.getUser().name)) {
+        			prompt.append(u);
+        			prompt.append('\n');
+        		}
         	}
             String s = Window.prompt(prompt.toString(), "");
             if (s != null && !s.isEmpty()) {

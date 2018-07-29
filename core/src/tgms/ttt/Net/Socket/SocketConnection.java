@@ -24,7 +24,7 @@ public abstract class SocketConnection extends Connection {
 			in = new ObjectInputStream(s.getInputStream());
 			out = new ObjectOutputStream(s.getOutputStream());
 			connected = true;
-			send(new Message(new Player(user.name), null));
+			send(new Message(new Player(getUser().name), null));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

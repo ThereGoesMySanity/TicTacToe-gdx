@@ -36,8 +36,8 @@ public class GameConnectionServiceImpl extends RemoteServiceServlet implements G
 	}
 
 	@Override
-	public Set<String> getUsers() {
-		return players.keySet();
+	public String[] getUsers() {
+		return (String[]) players.keySet().toArray();
 	}
 
 	@Override

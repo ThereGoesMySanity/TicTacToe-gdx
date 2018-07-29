@@ -1,7 +1,6 @@
 package tgms.ttt.client;
 
-import java.util.Set;
-
+import com.google.gwt.core.shared.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import tgms.ttt.Net.Connection;
@@ -11,21 +10,22 @@ public class GameConnectionServiceConnection extends Connection {
 	private GameConnectionServiceAsync conn;
 	boolean available, first;
 	Message message;
-	Set<String> users;
+	String[] users;
 	
 	public GameConnectionServiceConnection(String username) {
 		super(username);
-		conn.connect(user.name, null);
+		conn = GWT.create(GameConnectionService.class);
+		conn.connect(getUser().name, null);
 	}
 	
-	public Set<String> getUsers() {
-		conn.getUsers(new AsyncCallback<Set<String>>() {
+	public String[] getUsers() {
+		conn.getUsers(new AsyncCallback<String[]>() {
 			@Override
 			public void onFailure(Throwable caught) {
 				caught.printStackTrace();
 			}
 			@Override
-			public void onSuccess(Set<String> result) {
+			public void onSuccess(String[] result) {
 				users = result;
 			}
 		});

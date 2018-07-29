@@ -1,7 +1,5 @@
 package tgms.ttt.client;
 
-import java.util.Set;
-
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import tgms.ttt.Net.Message;
@@ -12,7 +10,7 @@ public interface GameConnectionServiceAsync {
 	void read(AsyncCallback<Message> callback);
 	void first(AsyncCallback<Boolean> callback);
 
-	void getUsers(AsyncCallback<Set<String>> callback);
+	void getUsers(AsyncCallback<String[]> callback);
 	void connect(String username, AsyncCallback<Void> callback);
 	void connectToUser(String username, AsyncCallback<Void> callback);
 }

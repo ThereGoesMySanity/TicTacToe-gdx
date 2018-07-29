@@ -1,11 +1,10 @@
 package tgms.ttt.Net;
 
-import com.badlogic.gdx.math.GridPoint2;
-
 import tgms.ttt.GameState.BoardState;
 
 public abstract class Connection implements ConnectionKernel {
-	protected Player user, userTwo;
+	private Player user;
+	protected Player userTwo;
 	BoardState b;
 	protected boolean connected = false;
 
@@ -28,8 +27,8 @@ public abstract class Connection implements ConnectionKernel {
 						userTwo = m.player;
 					}
 				} else {
-					if(m.move != null) {
-						makeMove(m.move);
+					if(m.x >= 0) {
+						makeMove(m.x, m.y);
 					}
 				}
 			}
@@ -37,15 +36,11 @@ public abstract class Connection implements ConnectionKernel {
 	}
 
 	public void makeMove(int x, int y) {
-		makeMove(new GridPoint2(x, y));
-	}
-
-	public void makeMove(GridPoint2 p) {
-		send(new Message(null, p));
+		send(new Message(null, x, y));
 	}
 
 	public int getLocalTurn() {
-		return user.turn;
+		return getUser().turn;
 	}
 
 	public String getPlayerName() {
@@ -58,5 +53,9 @@ public abstract class Connection implements ConnectionKernel {
 
 	public void setBoardState(BoardState b) {
 		this.b = b;
+	}
+
+	public Player getUser() {
+		return user;
 	}
 }

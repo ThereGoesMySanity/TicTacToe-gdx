@@ -1,3 +1,11 @@
 <?xml version="1.0" ?>
 <web-app>
+	<servlet>
+		<servlet-name>gameConnectionServiceImpl</servlet-name>
+		<servlet-class>tgms.ttt.server.GameConnectionServiceImpl</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>gameConnectionServiceImpl</servlet-name>
+		<url-pattern>/html/gameConnection</url-pattern>
+	</servlet-mapping>
 </web-app>
