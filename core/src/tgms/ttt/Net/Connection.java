@@ -1,74 +1,62 @@
 package tgms.ttt.Net;
 
+import com.badlogic.gdx.math.GridPoint2;
+
 import tgms.ttt.GameState.BoardState;
 
-public abstract class Connection implements ConnectionBase {
-    public static int DEFAULT_PORT = 5435;
-    String user, userTwo;
-    BoardState b;
-    protected int playerNum;
-    protected boolean connected = false;
+public abstract class Connection implements ConnectionKernel {
+	protected Player user, userTwo;
+	BoardState b;
+	protected boolean connected = false;
 
-    public String getPlayerName() {
-        return userTwo;
-    }
+	public Connection(String username) {
+		user = new Player(username);
+	}
 
-    public int getPlayerNum() {
-        return playerNum;
-    }
+	public abstract void start();
 
-    public void setPlayerNum(int num) {
-        this.playerNum = num;
-    }
+	public boolean accept(Player p) {
+		return true;
+	}
 
-    public Connection(String username) {
-        user = username;
-    }
+	public void handleInput() {
+		while(available()) {
+			Message m = read();
+			if(m != null) {
+				if (userTwo == null) {
+					if(accept(m.player)) {
+						userTwo = m.player;
+					}
+				} else {
+					if(m.move != null) {
+						makeMove(m.move);
+					}
+				}
+			}
+		}
+	}
 
-    public boolean connected() {
-        return connected;
-    }
+	public void makeMove(int x, int y) {
+		makeMove(new GridPoint2(x, y));
+	}
 
-    public void sendTurn() {
-        playerNum = (int)(Math.random()*2)+1;
-        send("turn:"+(playerNum ==1?2:1) +"\n");
-    }
+	public void makeMove(GridPoint2 p) {
+		send(new Message(null, p));
+	}
 
-    public void setBoardState(BoardState b) {
-        this.b = b;
-    }
+	public int getLocalTurn() {
+		return user.turn;
+	}
 
-    public void makeMove(int x, int y) {
-        if (playerNum == b.getTurn()) {
-            send("move:" + x + "," + y + "\n");
-        }
-    }
+	public String getPlayerName() {
+		return userTwo.name;
+	}
 
-    @Override
-    public void handleInput() {
-        handleInput("");
-    }
+	public boolean connected() {
+		return connected;
+	}
 
-    public void handleInput(String s){
-        while (available() > 0) {
-            s += read();
-            if (s.contains("\n")) {
-                break;
-            }
-        }
-        String[] sa = s.split("\n");
-        s = sa[0];
-        getInput2(s);
-        if (s.startsWith("user:")) {
-            userTwo = s.substring(5);
-        }
-        if (s.startsWith("move:")) {
-            String[] m = s.substring(5).split(",");
-            b.makeMove(Integer.parseInt(m[0]), Integer.parseInt(m[1]));
-        }
-        if (sa.length > 1) {
-            handleInput(sa[1]);
-        }
-    }
-    public abstract void getInput2(String s);
+	public void setBoardState(BoardState b) {
+		this.b = b;
+	}
 }

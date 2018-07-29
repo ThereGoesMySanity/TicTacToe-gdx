@@ -20,10 +20,8 @@ public class SocketClient extends SocketConnection {
 		}
     }
 
-    @Override
-    public void getInput2(String s) {
-        if (s.startsWith("turn:")) {
-            playerNum = s.charAt(5) - '0';
-        }
-    }
+	@Override
+	public boolean first() {
+		return false;
+	}
 }

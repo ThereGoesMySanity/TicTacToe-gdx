@@ -3,11 +3,7 @@ package tgms.ttt.client;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.google.gwt.user.client.Window;
 
-import tgms.ttt.Net.Socket.SocketClient;
-import tgms.ttt.Net.Socket.SocketServer;
 import tgms.ttt.PlatformInterfaces.Platform;
-
-import static tgms.ttt.Net.Connection.DEFAULT_PORT;
 
 class HtmlUtils extends Platform {
 
@@ -21,16 +17,17 @@ class HtmlUtils extends Platform {
 
     HtmlUtils() {
         online = () -> {
-            String s = Window.prompt("Enter IP to connect to,"
-                            + " or \"host\" if you are hosting.",
-                    "host");
-            if (s != null) {
-                String user = Window.prompt("Enter username", "");
-                if (s.equals("host")) {
-                    return new SocketServer(user, DEFAULT_PORT);
-                } else {
-                    return new SocketClient(user, s, DEFAULT_PORT);
-                }
+        	String user = Window.prompt("Enter username", "");
+        	GameConnectionServiceConnection gcsc = new GameConnectionServiceConnection(user);
+        	StringBuilder prompt = new StringBuilder("Select a user to connect to:\n");
+        	for(String u : gcsc.getUsers()) {
+        		prompt.append(u);
+        		prompt.append('\n');
+        	}
+            String s = Window.prompt(prompt.toString(), "");
+            if (s != null && !s.isEmpty()) {
+            	gcsc.setUser(s);
+            	return gcsc;
             }
             return null;
         };

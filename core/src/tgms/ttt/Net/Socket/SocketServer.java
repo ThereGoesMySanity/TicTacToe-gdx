@@ -13,18 +13,18 @@ public class SocketServer extends SocketConnection {
         s = Gdx.net.newServerSocket(Net.Protocol.TCP, port, null);
     }
 
-    @Override
-    public void getInput2(String s) {
-    }
-
     public void start() {
     	try {
 	        Socket sock = s.accept(null);
 			init(sock);
-			sendTurn();
 	        connected = true;
     	} catch (Exception e1) {
 			e1.printStackTrace();
 		}
     }
+
+	@Override
+	public boolean first() {
+		return true;
+	}
 }

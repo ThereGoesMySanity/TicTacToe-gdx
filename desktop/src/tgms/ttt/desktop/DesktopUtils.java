@@ -13,7 +13,7 @@ import tgms.ttt.PlatformInterfaces.Platform;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 
-import static tgms.ttt.Net.Connection.DEFAULT_PORT;
+import static tgms.ttt.Net.Socket.SocketConnection.DEFAULT_PORT;
 
 class DesktopUtils extends Platform {
 	@Override

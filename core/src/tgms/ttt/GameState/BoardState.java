@@ -460,8 +460,8 @@ public class BoardState extends GameState {
         }
         return true;
     }
-
-    public synchronized void makeMove(int x, int y) {
+    
+    public void makeMove(int x, int y) {
         if (getBoard(x, y) == 0) {
             fullBoard.get(y).set(x, getTurn());
             lastMove = new GridPoint2(x, y);

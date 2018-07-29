@@ -51,7 +51,10 @@ public class GameStateManager implements InputProcessor {
 	}
 
 	public void setState(State boardstate){
-        currentState = loadState(boardstate);
+		GameState s = loadState(boardstate);
+		if (s != null) {
+			currentState = s;
+		}
 	}
 
     @Override

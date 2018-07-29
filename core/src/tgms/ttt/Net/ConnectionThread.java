@@ -18,9 +18,7 @@ public class ConnectionThread implements Runnable {
         while(true) {
             try {
                 Thread.sleep(sleep);
-                if (conn.available() > 0) {
-                    conn.handleInput();
-                }
+                conn.handleInput();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

@@ -9,19 +9,23 @@ import tgms.ttt.Net.ConnectionThread;
 
 public class NetBoardState extends BoardState {
 	private Connection conn;
+	private boolean drawn;
 
 	NetBoardState(GameStateManager gsm)  {
 		super(gsm, 3, 3);
 		conn = gsm.platform().online.getConnection();
 		conn.setBoardState(this);
-		conn.start();
-		if (gsm.platform().thread != null) {
-			gsm.platform().thread.start(new ConnectionThread(conn));
-		}
+		drawn = false;
 	}
 
 	@Override
 	public void update() {
+		if(drawn && !conn.connected()) {
+			conn.start();
+			if (gsm.platform().thread != null) {
+				gsm.platform().thread.start(new ConnectionThread(conn));
+			}
+		}
 		if(gsm.platform().thread == null) {
 			conn.handleInput();
 		}
@@ -31,13 +35,13 @@ public class NetBoardState extends BoardState {
 	@Override
 	public boolean mouseReleased(int x, int y) {
 		return conn.connected()
-				&& getTurn() == conn.getPlayerNum()
+				&& getTurn() == conn.getLocalTurn()
                 && super.mouseReleased(x, y);
 	}
 	
 	@Override
 	public void makeMove(int x, int y) {
-		if(conn.connected() && getTurn() == conn.getPlayerNum()) {
+		if(conn.connected() && getTurn() == conn.getLocalTurn()) {
 			conn.makeMove(x, y);
 		}
 		super.makeMove(x, y);
@@ -45,10 +49,11 @@ public class NetBoardState extends BoardState {
 	@Override
 	public void draw(ShapeRenderer s, SpriteBatch sb) {
 		super.draw(s, sb);
+		drawn = true;
 		if(!conn.connected()) {
 			font.draw(sb, "Connecting...", TicTacToe.WIDTH/2, TicTacToe.HEIGHT/2);
 		} else {
-			if(getTurn() == conn.getPlayerNum()) {
+			if(getTurn() == conn.getLocalTurn()) {
 				font.draw(sb, "Your turn", 0, 50);
 			} else {
 				font.draw(sb, conn.getPlayerName()+"'s turn", 0, 50);
