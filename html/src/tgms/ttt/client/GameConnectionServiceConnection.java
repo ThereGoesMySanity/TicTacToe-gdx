@@ -1,6 +1,7 @@
 package tgms.ttt.client;
 
 import com.google.gwt.core.shared.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import tgms.ttt.Net.Connection;
@@ -8,48 +9,97 @@ import tgms.ttt.Net.Message;
 
 public class GameConnectionServiceConnection extends Connection {
 	private GameConnectionServiceAsync conn;
-	boolean available, first;
-	Message message;
-	String[] users;
-	
+	private boolean first;
+	private Message read;
+
 	public GameConnectionServiceConnection(String username) {
 		super(username);
 		conn = GWT.create(GameConnectionService.class);
-		conn.connect(getUser().name, null);
-	}
-	
-	public String[] getUsers() {
-		conn.getUsers(new AsyncCallback<String[]>() {
+		conn.connect(getUser().name, new AsyncCallback<Void>() {
 			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
+			public void onFailure(Throwable arg0) {
+				arg0.printStackTrace();
 			}
 			@Override
-			public void onSuccess(String[] result) {
-				users = result;
+			public void onSuccess(Void arg0) {
+				conn.getUsers(new GetUsersAsync());
 			}
 		});
-		return users;
 	}
 
-	public void setUser(String name) {
-		userTwo.name = name;
+	class GetUsersAsync implements AsyncCallback<String[]> {
+		@Override
+		public void onSuccess(String[] result) {
+			StringBuilder prompt = new StringBuilder("Select a user to connect to:\n");
+			String s = "";
+			while (s == null || s.isEmpty() || s.equals("refresh")) {
+				for(String u : result) {
+					if (!u.equals(getUser().name)) {
+						prompt.append(u);
+						prompt.append('\n');
+					}
+				}
+				s = Window.prompt(prompt.toString(), "");
+			}
+			if (s != null && !s.isEmpty()) {
+				userTwo.name = s;
+				conn.connectToUser(s, new StartAsync());
+			}
+		}
+		@Override
+		public void onFailure(Throwable caught) {
+			caught.printStackTrace();
+		}
+	}
+
+	class StartAsync implements AsyncCallback<Void> {
+		@Override
+		public void onSuccess(Void result) {
+			conn.first(new FirstAsync());
+		}
+		@Override
+		public void onFailure(Throwable caught) {
+			caught.printStackTrace();
+		}
+	}
+
+	class FirstAsync implements AsyncCallback<Boolean> {
+		@Override
+		public void onSuccess(Boolean result) {
+			first = result;
+			connected = true;
+		}
+		@Override
+		public void onFailure(Throwable caught) {
+			caught.printStackTrace();
+		}
+	}
+
+	@Override
+	public void start() {
+	}
+
+	@Override
+	public boolean first() {
+		return first;
 	}
 
 	@Override
 	public boolean available() {
-		conn.available(new AsyncCallback<Boolean>() {
-			@Override
-			public void onSuccess(Boolean result) {
-				available = result;
+		conn.available(new AvailableAsync());
+		return read != null;
+	}
+	class AvailableAsync implements AsyncCallback<Boolean> {
+		@Override
+		public void onFailure(Throwable arg0) {
+			arg0.printStackTrace();
+		}
+		@Override
+		public void onSuccess(Boolean result) {
+			if (result) {
+				conn.read(new ReadAsync());
 			}
-			@Override
-			public void onFailure(Throwable caught) {
-				available = false;
-				caught.printStackTrace();
-			}
-		});
-		return available;
+		}
 	}
 
 	@Override
@@ -59,48 +109,18 @@ public class GameConnectionServiceConnection extends Connection {
 
 	@Override
 	public Message read() {
-		conn.read(new AsyncCallback<Message>() {
-			@Override
-			public void onSuccess(Message result) {
-				message = result;
-			}
-			@Override
-			public void onFailure(Throwable caught) {
-				message = null;
-				caught.printStackTrace();
-			}
-		});
-		return message; 
+		Message m = read;
+		read = null;
+		return m; 
 	}
-
-	@Override
-	public void start() {
-		conn.connectToUser(userTwo.name, new AsyncCallback<Void>() {
-			@Override
-			public void onSuccess(Void result) {
-				connected = true;
-			}
-			@Override
-			public void onFailure(Throwable caught) {
-				connected = false;
-				caught.printStackTrace();
-			}
-		});
-	}
-
-	@Override
-	public boolean first() {
-		conn.first(new AsyncCallback<Boolean>() {
-			@Override
-			public void onSuccess(Boolean result) {
-				first = result;
-			}
-			@Override
-			public void onFailure(Throwable caught) {
-				first = false;
-				caught.printStackTrace();
-			}
-		});
-		return first;
+	class ReadAsync implements AsyncCallback<Message> {
+		@Override
+		public void onFailure(Throwable arg0) {
+			arg0.printStackTrace();
+		}
+		@Override
+		public void onSuccess(Message arg0) {
+			read = arg0;
+		}
 	}
 }

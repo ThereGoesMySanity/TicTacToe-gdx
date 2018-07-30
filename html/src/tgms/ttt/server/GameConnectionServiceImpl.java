@@ -1,7 +1,6 @@
 package tgms.ttt.server;
 
 import java.util.HashMap;
-import java.util.Set;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -30,6 +29,7 @@ public class GameConnectionServiceImpl extends RemoteServiceServlet implements G
 
 	@Override
 	public void connect(String username) {
+		System.out.println(username + " connected");
 		if(!players.containsKey(username)) {
 			players.put(username, getSessionId());
 		} 
@@ -37,7 +37,7 @@ public class GameConnectionServiceImpl extends RemoteServiceServlet implements G
 
 	@Override
 	public String[] getUsers() {
-		return (String[]) players.keySet().toArray();
+		return players.keySet().toArray(new String[0]);
 	}
 
 	@Override

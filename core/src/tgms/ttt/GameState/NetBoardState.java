@@ -50,6 +50,7 @@ public class NetBoardState extends BoardState {
 	public void draw(ShapeRenderer s, SpriteBatch sb) {
 		super.draw(s, sb);
 		drawn = true;
+		sb.begin();
 		if(!conn.connected()) {
 			font.draw(sb, "Connecting...", TicTacToe.WIDTH/2, TicTacToe.HEIGHT/2);
 		} else {
@@ -59,6 +60,7 @@ public class NetBoardState extends BoardState {
 				font.draw(sb, conn.getPlayerName()+"'s turn", 0, 50);
 			}
 		}
+		sb.end();
 	}
 	
 }
