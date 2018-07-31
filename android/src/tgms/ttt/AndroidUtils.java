@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Build;
+import android.os.Handler;
 import android.widget.EditText;
 
 import com.badlogic.gdx.Gdx;
@@ -14,11 +15,12 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFont
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+import tgms.ttt.Net.Connection;
 import tgms.ttt.Net.Socket.SocketClient;
 import tgms.ttt.Net.Socket.SocketServer;
 import tgms.ttt.PlatformInterfaces.Platform;
 
-import static tgms.ttt.Net.Connection.DEFAULT_PORT;
+import static tgms.ttt.Net.Socket.SocketConnection.DEFAULT_PORT;
 
 class AndroidUtils extends Platform {
     @Override
@@ -36,7 +38,7 @@ class AndroidUtils extends Platform {
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    AndroidUtils(Context c) {
+    AndroidUtils(Context c, Handler h) {
         thread = (r) -> new Thread(r).start();
 
         AlertDialog.Builder ab =
@@ -50,36 +52,49 @@ class AndroidUtils extends Platform {
         ip.setView(input);
         AlertDialog.Builder uname =
                 new AlertDialog.Builder(c, android.R.style.Theme_Material_Dialog_Alert);
-        ip.setTitle("Choose IP to connect to");
+        uname.setTitle("Set username");
         final EditText name = new EditText(c);
-        ip.setView(input);
+        uname.setView(name);
 
         online = () -> {
-            AtomicBoolean host = new AtomicBoolean(false);
-            ab.setPositiveButton("Host", (d, i) -> host.set(true));
-            ab.setNegativeButton("Connect", (d, i) -> host.set(false));
-            ab.show();
-
-            AtomicReference<String> n = new AtomicReference<>("");
-            uname.setPositiveButton("OK", (d, i) -> n.set(name.getText().toString()));
-            uname.setNegativeButton("Cancel", (dialog, i) -> dialog.cancel());
-            uname.show();
-            String username = n.get();
-            if (!username.isEmpty()) {
-                if (host.get()) {
-                    return new SocketServer(username, DEFAULT_PORT);
+            AtomicReference<Connection> ref = new AtomicReference<>(null);
+            AtomicBoolean done = new AtomicBoolean(false);
+            uname.setPositiveButton("OK", (d, i) -> {
+                String username = name.getText().toString();
+                if (!username.isEmpty()) {
+                    ab.show();
                 } else {
-                    AtomicReference<String> s = new AtomicReference<>("");
-                    ip.setPositiveButton("OK", (d, i) -> s.set(input.getText().toString()));
-                    ip.setNegativeButton("Cancel", ((dialog, i) -> dialog.cancel()));
-                    ip.show();
-                    String ipaddr = s.get();
-                    if (!ipaddr.isEmpty()) {
-                        return new SocketClient(username, ipaddr, DEFAULT_PORT);
+                    done.set(true);
+                }
+            });
+            uname.setNegativeButton("Cancel", (d, i) -> done.set(true));
+            ab.setPositiveButton("Host", (d, i) -> {
+                ref.set(new SocketServer(name.getText().toString(), DEFAULT_PORT));
+                done.set(true);
+            });
+            ab.setNegativeButton("Connect", (d, i) -> ip.show());
+            ip.setPositiveButton("OK", (d, i) -> {
+                String ipaddr = input.getText().toString();
+                if (!ipaddr.isEmpty()) {
+                    ref.set(new SocketClient(name.getText().toString(), ipaddr, DEFAULT_PORT));
+                }
+                done.set(true);
+            });
+            ip.setNegativeButton("Cancel", ((dialog, i) -> {
+                dialog.cancel();
+                done.set(true);
+            }));
+            synchronized (h) {
+                h.post(uname::show);
+                while (!done.get()) {
+                    try {
+                        h.wait(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
+                return ref.get();
             }
-            return null;
         };
     }
 }

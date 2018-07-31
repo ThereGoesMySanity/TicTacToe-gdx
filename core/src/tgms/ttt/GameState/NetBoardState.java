@@ -21,9 +21,10 @@ public class NetBoardState extends BoardState {
 	@Override
 	public void update() {
 		if(drawn && !conn.connected()) {
-			conn.start();
 			if (gsm.platform().thread != null) {
 				gsm.platform().thread.start(new ConnectionThread(conn));
+			} else {
+			    conn.start();
 			}
 		}
 		if(gsm.platform().thread == null) {

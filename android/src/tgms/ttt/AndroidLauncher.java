@@ -1,6 +1,7 @@
 package tgms.ttt;
 
 import android.os.Bundle;
+import android.os.Handler;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
@@ -14,8 +15,9 @@ public class AndroidLauncher extends AndroidApplication {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Handler h = new Handler();
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
         Platform.FONT_SIZE = 48;
-        initialize(new TicTacToe(new AndroidUtils(getContext())), config);
+        initialize(new TicTacToe(new AndroidUtils(getContext(), h)), config);
     }
 }
