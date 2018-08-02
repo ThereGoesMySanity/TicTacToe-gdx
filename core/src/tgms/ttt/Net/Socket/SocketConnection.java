@@ -35,7 +35,6 @@ public abstract class SocketConnection extends Connection {
         try {
             return in.available() > 0;
         } catch (IOException e) {
-			// TODO Auto-generated catch block
             e.printStackTrace();
         }
         return false;
@@ -46,7 +45,6 @@ public abstract class SocketConnection extends Connection {
     	try {
 			out.writeObject(m);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
     }
@@ -56,7 +54,6 @@ public abstract class SocketConnection extends Connection {
     	try {
 			return (Message) in.readObject();
 		} catch (ClassNotFoundException | IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}

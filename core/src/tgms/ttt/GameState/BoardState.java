@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import tgms.ttt.TicTacToe;
 import tgms.ttt.GameState.GameStateManager.State;
@@ -20,16 +21,14 @@ public class BoardState extends GameState {
 	//0 = blank but part of board, 1 and 2 = X and O, 3 and 4 = completed X and O row, 5 = Not board
 	private ArrayList<ArrayList<Integer>> fullBoard;
 	private int turn;
-	private GridPoint2 lastMove;
+	private GridPoint2 lastMove, mouse;
 	private int winner;
 	private int freeSpace;
-	private float offsetx, offsety;
+	private Vector2 offset;
 	private float squareSize;
 
 	private int boardSize;
 	private int inARow;
-
-	private int mouseX, mouseY;
 
 	private Color colorX, colorO, colorBoard;
 	private Texture xPic, oPic;
@@ -63,7 +62,6 @@ public class BoardState extends GameState {
 		//Okay, I consider x to be the outside arraylist and I don't care if that's weird
 		//Also, I'll probably mess up a lot either way.
 		//Update 5/20/15: Yes I messed up a lot, oh well
-
 		if (y < 0 || y > board.size() - 1) { //expanding up/down
 			for (int i = 0; i < boardSize; i++) {
 				ArrayList<Integer> z = new ArrayList<>();
@@ -108,9 +106,16 @@ public class BoardState extends GameState {
 		}
 		updateOffset();
 	}
+	private Vector2 getCoords(GridPoint2 p) {
+		return getCoords(p.x, p.y);
+	}
 
 	private Vector2 getCoords(int x, int y) {
-		return new Vector2(x * squareSize + offsetx, y * squareSize + offsety);
+		return new Vector2(x, y).scl(squareSize).add(offset);
+	}
+
+	private boolean inBounds(GridPoint2 p) {
+		return inBounds(p.x, p.y);
 	}
 
 	private boolean inBounds(int x, int y) {
@@ -147,8 +152,8 @@ public class BoardState extends GameState {
 		s.begin(ShapeType.Line);
 		if (Gdx.app.getType() != Application.ApplicationType.Android) {
 			s.set(ShapeType.Filled);
-			Vector2 point = getCoords(mouseX, mouseY);
-			if (inBounds(mouseX, mouseY) && getBoard(mouseX, mouseY) != 5) {
+			Vector2 point = getCoords(mouse);
+			if (inBounds(mouse) && getBoard(mouse) != 5) {
 				s.setColor(Color.GREEN);
 				s.rect(point.x, point.y, squareSize, squareSize);
 			}
@@ -159,13 +164,13 @@ public class BoardState extends GameState {
 		for (int i = 0; i < boardWidth(); i++) {
 			for (int j = 0; j < boardHeight(); j++) {
 				if (getBoard(i, j) != 5 && getBoard(i, j) != 0) {
+					s.setColor(colorBoard);
 					switch (getBoard(i, j)) {
 					case 3: s.setColor(colorX); break;
 					case 4: s.setColor(colorO); break;
 					}
 					drawShape(s, sb, i,  j);
-					drawMatch(s, i, j);
-
+					if (getBoard(i, j) == 3 || getBoard(i, j) == 4) drawMatch(s, i, j);
 				}
 			}
 		}
@@ -186,11 +191,10 @@ public class BoardState extends GameState {
 			s.begin(ShapeType.Line);
 		} else {
 			point.add(squareSize / 2, squareSize / 2);
-			switch (getBoard(x, y)) {
-			case 3: s.x(point, squareSize / 2); 
-				break;
-			case 4: s.circle(point.x, point.y, squareSize / 2);
-				break;
+			if(getBoard(x, y) == 1 || getBoard(x, y) == 3) {
+				s.x(point, squareSize / 2); 
+			} else if (getBoard(x, y) == 2 || getBoard(x, y) == 4) {
+				s.circle(point.x, point.y, squareSize / 2);
 			}
 		}
 	}
@@ -198,7 +202,7 @@ public class BoardState extends GameState {
 	private void drawMatch(ShapeRenderer s, int x, int y) {
 		for (int k = -1; k < 2; k++) {
 			for (int l = -1; l < 2; l++) {
-				if (inBounds(x + l, y + k) && getBoard(x + l, y + k) == 4) {
+				if (inBounds(x + l, y + k) && getBoard(x + l, y + k) == getBoard(x, y)) {
 					Vector2 center = new Vector2(squareSize / 2, squareSize / 2);
 					Vector2 point1 = getCoords(x, y).add(center);
 					Vector2 point2 = getCoords(x + l, y + k).add(center);
@@ -216,19 +220,19 @@ public class BoardState extends GameState {
 			gsm.setState(State.BOARDSTATE);
 		}
 		if (k == Input.Keys.ENTER) {
-			makeMove(mouseX, mouseY);
+			makeMove(mouse);
 		}
 		if (k == Input.Keys.DOWN) {
-			mouseY += 1;
+			mouse.add(0, 1);
 		}
 		if (k == Input.Keys.UP) {
-			mouseY -= 1;
+			mouse.sub(0, 1);
 		}
 		if (k == Input.Keys.RIGHT) {
-			mouseX += 1;
+			mouse.add(1, 0);
 		}
 		if (k == Input.Keys.LEFT) {
-			mouseX -= 1;
+			mouse.sub(1, 0);
 		}
 		return true;
 	}
@@ -236,16 +240,13 @@ public class BoardState extends GameState {
 	private void updateOffset() {
 		if (boardHeight() * TicTacToe.WIDTH > boardWidth() * TicTacToe.HEIGHT) {
 			squareSize = TicTacToe.HEIGHT * 1f / boardHeight();
-			offsetx = (TicTacToe.WIDTH - squareSize * boardWidth()) / 2;
-			offsety = 0;
+			offset.set((TicTacToe.WIDTH - squareSize * boardWidth()) / 2, 0);
 		} else if (boardHeight() * TicTacToe.WIDTH < boardWidth() * TicTacToe.HEIGHT) {
 			squareSize = TicTacToe.WIDTH * 1f / boardWidth();
-			offsety = (TicTacToe.HEIGHT - squareSize * boardHeight()) / 2;
-			offsetx = 0;
+			offset.set(0, (TicTacToe.HEIGHT - squareSize * boardHeight()) / 2);
 		} else {
 			squareSize = TicTacToe.WIDTH * 1f / boardHeight();
-			offsetx = 0;
-			offsety = 0;
+			offset.set(0, 0);
 		}
 	}
 
@@ -259,9 +260,9 @@ public class BoardState extends GameState {
 		for (GridPoint2 dir : directions) {
 			int pos, neg;
 			GridPoint2 last = lastMove.cpy();
-			for(pos = 0; pos < inARow && getBoard(last) == getBoard(lastMove); last.add(dir), pos++);
+			for(pos = 0; pos < inARow && inBounds(last) && getBoard(last) == getBoard(lastMove); last.add(dir), pos++);
 			last = lastMove.cpy().sub(dir);
-			for(neg = 0; pos + neg < inARow && getBoard(last) == getBoard(lastMove); last.sub(dir), neg++);
+			for(neg = 0; pos + neg < inARow && inBounds(last) && getBoard(last) == getBoard(lastMove); last.sub(dir), neg++);
 			if (pos + neg == inARow) {
 				last = lastMove.cpy();
 				for(int i = 0; i < pos; i++, last.add(dir))
@@ -269,27 +270,46 @@ public class BoardState extends GameState {
 				last = lastMove.cpy().sub(dir);
 				for(int i = 0; i < neg; i++, last.sub(dir))
 					setBoard(last, getBoard(last) + 2);
-			}
-		}
-		if (winner != 0) {
-			switch (winner) {
-			case 1: gsm.WIN = "X"; break;
-			case 2: gsm.WIN = "O"; break;
+				HashSet<GridPoint2> fill = new HashSet<>();
+				floodFill(fill, lastMove);
+				System.out.println(fill.size());
+				if(fill.size() >= inARow * inARow) {
+					switch (getBoard(lastMove)) {
+					case 3: gsm.WIN = "X"; break;
+					case 4: gsm.WIN = "O"; break;
+					}
+					gsm.setState(State.GAMEOVER);
+				} else {
+					buildFromLastMove(false);
+				}
+				break;
 			}
 		}
 		if (freeSpace == 0) {
 			buildFromLastMove(true);
 		}
 	}
-	
+
+	private void floodFill(HashSet<GridPoint2> checked, GridPoint2 p) {
+		checked.add(p);
+		for (int i = -1; i < 2; i++) {
+			for (int j = -1; j < 2; j++) {
+				GridPoint2 point = new GridPoint2(i, j).add(p);
+				if(inBounds(point) && getBoard(point) == getBoard(p) && !checked.contains(point)) {
+					floodFill(checked, point);
+				}
+			}
+		}
+	}
+
 	private void setBoard(GridPoint2 p, int val) {
 		setBoard(p.x, p.y, val);
 	}
-	
+
 	private void setBoard(int x, int y, int val) {
 		fullBoard.get(y).set(x, val);
 	}
-	
+
 	private int getBoard(GridPoint2 p) {
 		return getBoard(p.x, p.y);
 	}
@@ -298,10 +318,10 @@ public class BoardState extends GameState {
 		return fullBoard.get(y).get(x);
 	}
 	private int boardHeight() {
-		return boardHeight();
+		return fullBoard.size();
 	}
 	private int boardWidth() {
-		return boardWidth();
+		return fullBoard.get(0).size();
 	}
 
 	private void buildFromLastMove(boolean noMovesLeft) {
@@ -326,20 +346,22 @@ public class BoardState extends GameState {
 
 	@Override
 	public boolean mouseReleased(int x, int y) {
-		int currentX = (int) ((x - offsetx) / squareSize);
-		int currentY = (int) ((y - offsety) / squareSize);
-		if (currentX < boardWidth() && currentY < boardHeight()) {
+		Vector2 p = new Vector2(x, y).sub(offset).scl(1 / squareSize);
+		if (p.x < boardWidth() && p.y < boardHeight()) {
 			//I have to remember that X is Y and Y is X
-			makeMove(currentX, currentY);//Literally 80% of my problems are that
+			makeMove((int)p.x, (int)p.y);//Literally 80% of my problems are that
 		}
 		return true;
 	}
-
 	public void makeMove(int x, int y) {
-		if (getBoard(x, y) == 0) {
-			setBoard(x, y, getTurn());
+		makeMove(new GridPoint2(x, y));
+	}
+
+	public void makeMove(GridPoint2 p) {
+		if (getBoard(p) == 0) {
+			setBoard(p, getTurn());
 			freeSpace--;
-			lastMove = new GridPoint2(x, y);
+			lastMove = p;
 			nextTurn();
 			updateBoard();
 		}
@@ -355,11 +377,11 @@ public class BoardState extends GameState {
 
 	@Override
 	public boolean mouseMoved(int x, int y) {
-		int currentX = (int) ((x - offsetx) / squareSize);
-		int currentY = (int) ((y - offsety) / squareSize);
-		if (inBounds(currentX, currentY)) { //I have to remember that X is Y and Y is X
-			mouseX = currentX; //Update 2017-05-06: past me didn't remember this and I had to fix it :/
-			mouseY = currentY; //it was literally that exact line that I messed it up...
+		Vector2 v = new Vector2(x, y).sub(offset).scl(1 / squareSize);
+		GridPoint2 p = new GridPoint2((int)v.x, (int)v.y);
+		if (inBounds(p)) { //I have to remember that X is Y and Y is X
+			mouse = p; //Update 2017-05-06: past me didn't remember this and I had to fix it :/
+			//it was literally that exact line that I messed it up...
 		}
 		return true;
 	}

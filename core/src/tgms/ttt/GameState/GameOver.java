@@ -12,8 +12,10 @@ import tgms.ttt.GameState.GameStateManager.State;
 
 public class GameOver extends GameState {
     //TODO: A lot
-    GameOver(GameStateManager gsm) {
+	BoardState board;
+    GameOver(GameStateManager gsm, BoardState state) {
         super(gsm);
+        board = state;
     }
 
     @Override
@@ -22,13 +24,14 @@ public class GameOver extends GameState {
 
     @Override
     public void draw(ShapeRenderer s, SpriteBatch sb) {
+    	board.draw(s, sb);
         sb.begin();
         font.setColor(Color.GREEN);
         GlyphLayout gameOver = new GlyphLayout(font, "Game Over");
         GlyphLayout winner = new GlyphLayout(font, gsm.WIN + " Wins");
         float x = ((TicTacToe.WIDTH - gameOver.width) / 2);
         float x2 = ((TicTacToe.WIDTH - winner.width) / 2);
-        font.draw(sb, winner, x, 32);
+        font.draw(sb, gameOver, x, 32);
         font.draw(sb, winner, x2, 128);
         sb.end();
     }
@@ -58,6 +61,6 @@ public class GameOver extends GameState {
 
 	@Override
 	public void onResize() {
-		// TODO Auto-generated method stub
+		board.onResize();
 	}
 }

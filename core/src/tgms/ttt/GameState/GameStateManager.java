@@ -44,7 +44,7 @@ public class GameStateManager implements InputProcessor {
 			case OPTIONSSTATE:
 				return new OptionsState(this);
 			case GAMEOVER:
-				return new GameOver(this);
+				return new GameOver(this, (BoardState)currentState);
 			default:
 				return null;
 		}
