@@ -37,7 +37,7 @@ public class BoardState extends GameState {
 	BoardState(GameStateManager gsm, int boardSize, int inARow) {
 		super(gsm);
 		this.boardSize = boardSize;
-		//        this.inARow = inARow;
+		this.inARow = inARow;
 		colorX = gsm.xColor;
 		colorO = gsm.oColor;
 		colorBoard = gsm.boardColor;
