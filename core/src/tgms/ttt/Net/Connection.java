@@ -12,7 +12,11 @@ public abstract class Connection implements ConnectionKernel {
 		user = new Player(username);
 	}
 
-	public abstract void start();
+	public void start() {
+		if (first()) {
+			send(new Message(new Player(user.name, 0), null));
+		}
+	}
 
 	public boolean accept(Player p) {
 		return true;
@@ -25,18 +29,17 @@ public abstract class Connection implements ConnectionKernel {
 				if (userTwo == null) {
 					if(accept(m.player)) {
 						userTwo = m.player;
+						if (!first()) {
+							send(new Message(new Player(user.name, 0), null));
+						}
 					}
 				} else {
 					if(m.x >= 0) {
-						makeMove(m.x, m.y);
+						b.makeMove(m.x, m.y);
 					}
 				}
 			}
 		}
-	}
-
-	public void makeMove(int x, int y) {
-		send(new Message(null, x, y));
 	}
 
 	public int getLocalTurn() {

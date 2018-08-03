@@ -137,6 +137,7 @@ public class OptionsState extends GameState {
         }
         return false;
     }
+
     @Override
     public boolean mouseMoved(int x, int y) {
         if(y >= (160) && y <= (160 + options.size()*60)&&x>=(150)){

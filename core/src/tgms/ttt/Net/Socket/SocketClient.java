@@ -12,12 +12,14 @@ public class SocketClient extends SocketConnection {
         connected = true;
     }
     
+    @Override
     public void start() {
     	try {
     		init(conn);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+    	super.start();
     }
 
 	@Override

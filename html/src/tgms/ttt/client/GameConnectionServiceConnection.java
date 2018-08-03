@@ -123,4 +123,9 @@ public class GameConnectionServiceConnection extends Connection {
 			read = arg0;
 		}
 	}
+
+	@Override
+	public void close() {
+		conn.close(null);
+	}
 }

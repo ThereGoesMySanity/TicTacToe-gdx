@@ -7,6 +7,7 @@ public class ConnectionThread implements Runnable {
     public ConnectionThread(Connection c) {
         this(c, 100);
     }
+
     public ConnectionThread(Connection c, int s) {
         conn = c;
         sleep = s;

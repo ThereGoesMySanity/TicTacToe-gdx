@@ -22,7 +22,6 @@ public class BoardState extends GameState {
 	private ArrayList<ArrayList<Integer>> fullBoard;
 	private int turn;
 	private GridPoint2 lastMove, mouse;
-	private int winner;
 	private int freeSpace;
 	private Vector2 offset;
 	private float squareSize;
@@ -43,7 +42,6 @@ public class BoardState extends GameState {
 		xPic = gsm.xImage;
 		oPic = gsm.oImage;
 		turn = 1;
-		winner = 0;
 		fullBoard = new ArrayList<>();
 		for (int i = 0; i < boardSize; i++) {
 			ArrayList<Integer> z = new ArrayList<>();
@@ -173,9 +171,6 @@ public class BoardState extends GameState {
 					if (getBoard(i, j) == 3 || getBoard(i, j) == 4) drawMatch(s, i, j);
 				}
 			}
-		}
-		if (winner != 0) {
-			gsm.setState(State.GAMEOVER);
 		}
 		s.end();
 	}

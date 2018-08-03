@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import tgms.ttt.TicTacToe;
 import tgms.ttt.Net.Connection;
 import tgms.ttt.Net.ConnectionThread;
+import tgms.ttt.Net.Message;
 
 public class NetBoardState extends BoardState {
 	private Connection conn;
@@ -43,10 +44,12 @@ public class NetBoardState extends BoardState {
 	@Override
 	public void makeMove(int x, int y) {
 		if(conn.connected() && getTurn() == conn.getLocalTurn()) {
-			conn.makeMove(x, y);
+			conn.send(new Message(null, x, y));
 		}
 		super.makeMove(x, y);
+		if (gsm.WIN != null) conn.close();
 	}
+
 	@Override
 	public void draw(ShapeRenderer s, SpriteBatch sb) {
 		super.draw(s, sb);

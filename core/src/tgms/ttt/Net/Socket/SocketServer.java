@@ -21,10 +21,17 @@ public class SocketServer extends SocketConnection {
     	} catch (Exception e1) {
 			e1.printStackTrace();
 		}
+    	super.start();
     }
 
 	@Override
 	public boolean first() {
 		return true;
+	}
+	
+	@Override
+	public void close() {
+		super.close();
+		s.dispose();
 	}
 }
