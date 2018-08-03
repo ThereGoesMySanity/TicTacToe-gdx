@@ -6,7 +6,7 @@ import java.net.Socket;
 import tgms.ttt.Net.Message;
 
 public class GameServerSocket extends SocketClient implements GameServerKernel {
-	private static final String SERVER = "localhost";
+	private static final String SERVER = "127.0.0.1";
 
 	public GameServerSocket(String username, int port) {
 		super(username, SERVER, port);
@@ -21,7 +21,6 @@ public class GameServerSocket extends SocketClient implements GameServerKernel {
 	@Override
 	public String[] getUsers() {
 		send(new Message(Message.GET_USERS));
-		while(!available());
 		return (String[]) ms.readObject();
 	}
 	

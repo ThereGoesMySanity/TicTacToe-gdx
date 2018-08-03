@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -26,50 +27,60 @@ public class GameConnectionServiceImpl extends RemoteServiceServlet implements G
 	private HashMap<String, String> games;
 	//key: session id
 	private HashMap<String, Queue<Message>> messages;
-	private GameServer server;
+	private Thread serverThread, socketThread;
 	private boolean running = true;
 	private static final long serialVersionUID = 1L;
 
-	class GameServer extends Thread {
-		private ServerSocket ss;
-		private HashMap<String, MessageSocket> sockets;
-		public GameServer() throws IOException {
-			ss = new ServerSocket(DEFAULT_PORT);
-			sockets = new HashMap<>();
+	class SocketThread extends Thread {
+		private ConcurrentHashMap<String, MessageSocket> sockets;
+		public SocketThread(ConcurrentHashMap<String, MessageSocket> s) {
+			sockets = s;
 		}
 
 		@Override
 		public void run() {
-			new Thread(new Runnable() {
-				public void run() {
-					while (running) {
-						synchronized (messages) {
-							for (Entry<String, MessageSocket> e : sockets.entrySet()) {
-								while (e.getValue().available()) {
-									Message m = e.getValue().read();
-									switch (m.type) {
-									case Message.CONNECT:
-										connect(m.player.name);
-									case Message.GET_USERS:
-										e.getValue().writeObject(getUsers());
-									case Message.CONNECT_TO_USER:
-										connectToUser(m.player.name);
-									default:
-									}
-								}
-								while (!messages.get(e.getKey()).isEmpty()) {
-									e.getValue().write(messages.get(e.getKey()).poll());
-								}
-							}
-						}
-						try {
-							Thread.sleep(100);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
+			while (running) {
+				for (Entry<String, MessageSocket> e : sockets.entrySet()) {
+					System.out.println(e.getKey());
+					while (e.getValue().available()) {
+						Message m = e.getValue().read();
+						switch (m.type) {
+						case Message.CONNECT:
+							connect(e.getKey(), m.player.name);
+						case Message.GET_USERS:
+							e.getValue().writeObject(getUsers());
+						case Message.CONNECT_TO_USER:
+							connectToUser(e.getKey(), m.player.name);
+						default:
+							send(e.getKey(), m);
 						}
 					}
+					while (messages.containsKey(e.getKey()) 
+							&& !messages.get(e.getKey()).isEmpty()) {
+						e.getValue().write(read(e.getKey()));
+					}
 				}
-			}, "Socket Check Loop").start();
+			}
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	class GameServer extends Thread {
+		private ServerSocket ss;
+		private ConcurrentHashMap<String, MessageSocket> sockets;
+		public GameServer() throws IOException {
+			ss = new ServerSocket(DEFAULT_PORT);
+			sockets = new ConcurrentHashMap<>();
+			socketThread = new SocketThread(sockets);
+		}
+
+		@Override
+		public void run() {
+			socketThread.start();
 			while (running) {
 				try {
 					Socket s = ss.accept();
@@ -93,9 +104,9 @@ public class GameConnectionServiceImpl extends RemoteServiceServlet implements G
 		games = new HashMap<>();
 		messages = new HashMap<>();
 		try {
-			server = new GameServer();
-			server.setName("GameServer Thread");
-			server.start();
+			serverThread = new GameServer();
+			serverThread.setName("GameServer Thread");
+			serverThread.start();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -107,18 +118,20 @@ public class GameConnectionServiceImpl extends RemoteServiceServlet implements G
 
 	@Override
 	public void connect(String username) {
+		connect(getSessionId(), username);
+	}
+
+	public synchronized void connect(String id, String username) {
 		System.out.println(username + " connected");
-		synchronized (messages) {
-			if(!players.containsKey(username)) {
-				players.put(username, getSessionId());
-				names.put(getSessionId(), username);
-				messages.put(getSessionId(), new ArrayDeque<Message>());
-			} 
-		}
+		if(!players.containsKey(username)) {
+			players.put(username, id);
+			names.put(id, username);
+			messages.put(id, new ArrayDeque<Message>());
+		} 
 	}
 
 	@Override
-	public String[] getUsers() {
+	public synchronized String[] getUsers() {
 		String[] s = players.keySet().toArray(new String[0]);
 		System.out.println(Arrays.toString(s));
 		return s;
@@ -126,36 +139,52 @@ public class GameConnectionServiceImpl extends RemoteServiceServlet implements G
 
 	@Override
 	public void connectToUser(String username) {
-		games.put(getSessionId(), players.get(username));
-		games.put(players.get(username), getSessionId());
+		connectToUser(getSessionId(), username);
+	}
+
+	public synchronized void connectToUser(String id, String username) {
+		games.put(id, players.get(username));
+		games.put(players.get(username), id);
 	}
 
 	@Override
 	public boolean available() {
-		return messages.containsKey(getSessionId()) && !messages.get(getSessionId()).isEmpty();
+		return available(getSessionId());
+	}
+
+	public synchronized boolean available(String id) {
+		return messages.containsKey(id) && !messages.get(getSessionId()).isEmpty();
 	}
 
 	@Override
 	public void send(Message m) {
-		synchronized (messages) {
-			messages.get(games.get(getSessionId())).add(m);
-		}
+		send(getSessionId(), m);
+	}
+
+	public synchronized void send(String id, Message m) {
+		messages.get(games.get(id)).add(m);
 	}
 
 	@Override
 	public Message read() {
-		synchronized (messages) {
-			return messages.get(getSessionId()).poll();
-		}
+		return read(getSessionId());
+	}
+
+	public synchronized Message read(String id) {
+		return messages.get(id).poll();
 	}
 
 	@Override
 	public boolean first() {
-		return getSessionId().compareTo(games.get(getSessionId())) < 0;
+		return first(getSessionId());
+	}
+
+	public synchronized boolean first(String id) {
+		return id.compareTo(games.get(id)) < 0;
 	}
 
 	@Override
-	public void close() {
+	public synchronized void close() {
 		if (names.containsKey(getSessionId())) players.remove(names.remove(getSessionId()));
 		if (games.containsKey(getSessionId())) games.remove(games.remove(getSessionId()));
 		if (messages.containsKey(getSessionId())) messages.remove(getSessionId());

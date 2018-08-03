@@ -14,8 +14,8 @@ public class MessageSocket {
 	private ObjectOutputStream out;
 	public MessageSocket(InputStream i, OutputStream o) {
 		try {
-			in = new ObjectInputStream(i);
 			out = new ObjectOutputStream(o);
+			in = new ObjectInputStream(i);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -34,6 +34,7 @@ public class MessageSocket {
 	public void write(Message m) {
 		try {
 			out.writeObject(m);
+			System.out.println("Wrote message");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
