@@ -1,13 +1,14 @@
 package tgms.ttt.Net.Socket;
 
-import com.badlogic.gdx.net.Socket;
+import java.io.IOException;
+import java.net.Socket;
 
 import tgms.ttt.Net.Connection;
 import tgms.ttt.Net.Message;
 
 public abstract class SocketConnection extends Connection {
 	protected MessageSocket ms;
-	private Socket sock;
+	protected Socket sock;
 	public static int DEFAULT_PORT = 5435;
 
 	public SocketConnection(String username) {
@@ -15,9 +16,11 @@ public abstract class SocketConnection extends Connection {
 	}
 
 	protected void init(Socket s) {
-		ms = new MessageSocket(s);
-		connected = true;
-		sock = s;
+		try {
+			ms = new MessageSocket(s.getInputStream(), s.getOutputStream());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -37,7 +40,11 @@ public abstract class SocketConnection extends Connection {
 
 	@Override
 	public void close() {
-		sock.dispose();
+		try {
+			sock.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		connected = false;
 	}
 }

@@ -1,8 +1,12 @@
 package tgms.ttt.server;
 
+import static tgms.ttt.Net.Socket.SocketConnection.DEFAULT_PORT;
+
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Queue;
@@ -22,25 +26,62 @@ public class GameConnectionServiceImpl extends RemoteServiceServlet implements G
 	private HashMap<String, String> games;
 	//key: session id
 	private HashMap<String, Queue<Message>> messages;
+	private GameServer server;
+	private boolean running = true;
 	private static final long serialVersionUID = 1L;
 
-
-	class GameServer extends ServerSocket implements Runnable {
+	class GameServer extends Thread {
+		private ServerSocket ss;
 		private HashMap<String, MessageSocket> sockets;
-		public GameServer(int port) throws IOException {
-			super(port);
+		public GameServer() throws IOException {
+			ss = new ServerSocket(DEFAULT_PORT);
+			sockets = new HashMap<>();
 		}
 
 		@Override
 		public void run() {
-			synchronized (messages) {
-				for (Entry<String, MessageSocket> e : sockets.entrySet()) {
-					while (!messages.get(e.getKey()).isEmpty()) {
-						e.getValue().write(messages.get(e.getKey()).poll());
+			new Thread(new Runnable() {
+				public void run() {
+					while (running) {
+						synchronized (messages) {
+							for (Entry<String, MessageSocket> e : sockets.entrySet()) {
+								while (e.getValue().available()) {
+									Message m = e.getValue().read();
+									switch (m.type) {
+									case Message.CONNECT:
+										connect(m.player.name);
+									case Message.GET_USERS:
+										e.getValue().writeObject(getUsers());
+									case Message.CONNECT_TO_USER:
+										connectToUser(m.player.name);
+									default:
+									}
+								}
+								while (!messages.get(e.getKey()).isEmpty()) {
+									e.getValue().write(messages.get(e.getKey()).poll());
+								}
+							}
+						}
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
 					}
-					while (e.getValue().available()) {
-						messages.get(e.getKey()).add(e.getValue().read());
+				}
+			}, "Socket Check Loop").start();
+			while (running) {
+				try {
+					Socket s = ss.accept();
+					try {
+						MessageSocket m = new MessageSocket(s);
+						sockets.put(s.getRemoteSocketAddress().toString(), m);
+					} catch (IOException e) {
+						e.printStackTrace();
+						sockets.remove(s.getRemoteSocketAddress().toString());
 					}
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
 			}
 		}
@@ -51,6 +92,13 @@ public class GameConnectionServiceImpl extends RemoteServiceServlet implements G
 		names = new HashMap<>();
 		games = new HashMap<>();
 		messages = new HashMap<>();
+		try {
+			server = new GameServer();
+			server.setName("GameServer Thread");
+			server.start();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private String getSessionId() {
@@ -71,7 +119,9 @@ public class GameConnectionServiceImpl extends RemoteServiceServlet implements G
 
 	@Override
 	public String[] getUsers() {
-		return players.keySet().toArray(new String[0]);
+		String[] s = players.keySet().toArray(new String[0]);
+		System.out.println(Arrays.toString(s));
+		return s;
 	}
 
 	@Override
@@ -82,7 +132,7 @@ public class GameConnectionServiceImpl extends RemoteServiceServlet implements G
 
 	@Override
 	public boolean available() {
-		return !messages.get(getSessionId()).isEmpty();
+		return messages.containsKey(getSessionId()) && !messages.get(getSessionId()).isEmpty();
 	}
 
 	@Override

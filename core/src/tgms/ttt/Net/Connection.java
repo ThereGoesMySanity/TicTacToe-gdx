@@ -14,7 +14,7 @@ public abstract class Connection implements ConnectionKernel {
 
 	public void start() {
 		if (first()) {
-			send(new Message(new Player(user.name, 0), null));
+			send(new Message(user.name));
 		}
 	}
 
@@ -30,7 +30,7 @@ public abstract class Connection implements ConnectionKernel {
 					if(accept(m.player)) {
 						userTwo = m.player;
 						if (!first()) {
-							send(new Message(new Player(user.name, 0), null));
+							send(new Message(user.name));
 						}
 					}
 				} else {

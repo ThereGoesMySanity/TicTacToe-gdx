@@ -1,23 +1,27 @@
 package tgms.ttt.Net.Socket;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Net;
-import com.badlogic.gdx.net.ServerSocket;
-import com.badlogic.gdx.net.Socket;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 public class SocketServer extends SocketConnection {
-    static ServerSocket s;
+    static ServerSocket ss;
 
     public SocketServer(String username, int port) {
         super(username);
-        s = Gdx.net.newServerSocket(Net.Protocol.TCP, port, null);
+        try {
+			ss = new ServerSocket(port);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
     }
 
     public void start() {
     	try {
-	        Socket sock = s.accept(null);
-			init(sock);
-	        connected = true;
+	        Socket s = ss.accept();
+			init(s);
+			sock = s;
+			connected = true;
     	} catch (Exception e1) {
 			e1.printStackTrace();
 		}
@@ -32,6 +36,12 @@ public class SocketServer extends SocketConnection {
 	@Override
 	public void close() {
 		super.close();
-		s.dispose();
+		try {
+			ss.close();
+			sock.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

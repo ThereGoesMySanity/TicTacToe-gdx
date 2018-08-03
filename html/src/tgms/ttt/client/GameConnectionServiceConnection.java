@@ -32,19 +32,23 @@ public class GameConnectionServiceConnection extends Connection {
 		public void onSuccess(String[] result) {
 			StringBuilder prompt = new StringBuilder("Select a user to connect to:\n");
 			String s = "";
-			while (s == null || s.isEmpty() || s.equals("refresh")) {
-				for(String u : result) {
-					if (!u.equals(getUser().name)) {
-						prompt.append(u);
-						prompt.append('\n');
-					}
+			for(String u : result) {
+				if (!u.equals(getUser().name)) {
+					prompt.append(u);
+					prompt.append('\n');
 				}
-				s = Window.prompt(prompt.toString(), "");
 			}
-			if (s != null && !s.isEmpty()) {
+			if (result.length == 1) {
+				prompt.append("No users! Leave the box blank and hit OK to refresh.");
+			}
+			s = Window.prompt(prompt.toString(), "");
+			if (s.isEmpty()) {
+				conn.getUsers(this);
+			} else if (s != null) {
 				userTwo.name = s;
 				conn.connectToUser(s, new StartAsync());
 			}
+			//TODO: on cancel
 		}
 		@Override
 		public void onFailure(Throwable caught) {

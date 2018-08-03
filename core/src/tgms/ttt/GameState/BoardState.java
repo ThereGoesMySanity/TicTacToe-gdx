@@ -51,6 +51,8 @@ public class BoardState extends GameState {
 			fullBoard.add(z);
 		}
 		freeSpace = 9;
+		offset = new Vector2();
+		mouse = new GridPoint2();
 		updateOffset();
 	}
 
