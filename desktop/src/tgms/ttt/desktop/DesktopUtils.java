@@ -63,6 +63,7 @@ class DesktopUtils extends Platform {
 						s = JOptionPane.showInputDialog(prompt.toString());
 					}
 					gss.connectToUser(s);
+					return gss;
 				}
 			}
 			return null;

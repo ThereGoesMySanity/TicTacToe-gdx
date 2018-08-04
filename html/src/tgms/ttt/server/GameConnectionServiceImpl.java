@@ -8,9 +8,7 @@ import java.net.Socket;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map.Entry;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -27,70 +25,26 @@ public class GameConnectionServiceImpl extends RemoteServiceServlet implements G
 	private HashMap<String, String> games;
 	//key: session id
 	private HashMap<String, Queue<Message>> messages;
-	private Thread serverThread, socketThread;
+	private Thread serverThread;
 	private boolean running = true;
 	private static final long serialVersionUID = 1L;
 
-	class SocketThread extends Thread {
-		private ConcurrentHashMap<String, MessageSocket> sockets;
-		public SocketThread(ConcurrentHashMap<String, MessageSocket> s) {
-			sockets = s;
-		}
-
-		@Override
-		public void run() {
-			while (running) {
-				for (Entry<String, MessageSocket> e : sockets.entrySet()) {
-					System.out.println(e.getKey());
-					while (e.getValue().available()) {
-						Message m = e.getValue().read();
-						switch (m.type) {
-						case Message.CONNECT:
-							connect(e.getKey(), m.player.name);
-						case Message.GET_USERS:
-							e.getValue().writeObject(getUsers());
-						case Message.CONNECT_TO_USER:
-							connectToUser(e.getKey(), m.player.name);
-						default:
-							send(e.getKey(), m);
-						}
-					}
-					while (messages.containsKey(e.getKey()) 
-							&& !messages.get(e.getKey()).isEmpty()) {
-						e.getValue().write(read(e.getKey()));
-					}
-				}
-			}
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-	}
 
 	class GameServer extends Thread {
 		private ServerSocket ss;
-		private ConcurrentHashMap<String, MessageSocket> sockets;
-		public GameServer() throws IOException {
+		private GameConnectionServiceImpl s;
+		public GameServer(GameConnectionServiceImpl s) throws IOException {
+			this.s = s;
 			ss = new ServerSocket(DEFAULT_PORT);
-			sockets = new ConcurrentHashMap<>();
-			socketThread = new SocketThread(sockets);
 		}
 
 		@Override
 		public void run() {
-			socketThread.start();
 			while (running) {
 				try {
 					Socket s = ss.accept();
-					try {
-						MessageSocket m = new MessageSocket(s);
-						sockets.put(s.getRemoteSocketAddress().toString(), m);
-					} catch (IOException e) {
-						e.printStackTrace();
-						sockets.remove(s.getRemoteSocketAddress().toString());
-					}
+					MessageSocket m = new MessageSocket(s);
+					new SocketThread(this.s, s.getRemoteSocketAddress().toString(), m).start();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -104,7 +58,7 @@ public class GameConnectionServiceImpl extends RemoteServiceServlet implements G
 		games = new HashMap<>();
 		messages = new HashMap<>();
 		try {
-			serverThread = new GameServer();
+			serverThread = new GameServer(this);
 			serverThread.setName("GameServer Thread");
 			serverThread.start();
 		} catch (IOException e) {
@@ -145,15 +99,13 @@ public class GameConnectionServiceImpl extends RemoteServiceServlet implements G
 	public synchronized void connectToUser(String id, String username) {
 		games.put(id, players.get(username));
 		games.put(players.get(username), id);
-	}
-
-	@Override
-	public boolean available() {
-		return available(getSessionId());
+		Message m = new Message(names.get(id));
+		m.type = Message.CONNECT_TO_USER;
+		send(players.get(username), m);
 	}
 
 	public synchronized boolean available(String id) {
-		return messages.containsKey(id) && !messages.get(getSessionId()).isEmpty();
+		return messages.containsKey(id) && !messages.get(id).isEmpty();
 	}
 
 	@Override

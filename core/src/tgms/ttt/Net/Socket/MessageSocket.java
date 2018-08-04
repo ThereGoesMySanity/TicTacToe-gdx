@@ -10,6 +10,7 @@ import java.net.Socket;
 import tgms.ttt.Net.Message;
 
 public class MessageSocket {
+	private Socket sock;
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
 	public MessageSocket(InputStream i, OutputStream o) {
@@ -22,6 +23,7 @@ public class MessageSocket {
 	}
 	public MessageSocket(Socket s) throws IOException {
 		this(s.getInputStream(), s.getOutputStream());
+		sock = s;
 	}
 	public MessageSocket(InputStream i, OutputStream o, String username) {
 		this(i, o);
@@ -32,27 +34,20 @@ public class MessageSocket {
 		}
 	}
 	public void write(Message m) {
-		try {
-			out.writeObject(m);
-			System.out.println("Wrote message");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		writeObject(m);
 	}
 	public void writeObject(Object obj) {
 		try {
 			out.writeObject(obj);
+			out.flush();
+			System.out.println("Wrote message ");
+			if(sock != null)System.out.println(sock.isConnected());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	public Message read() {
-		try {
-			return (Message)in.readObject();
-		} catch (ClassNotFoundException | IOException e) {
-			e.printStackTrace();
-			return null;
-		}
+		return (Message)readObject();
 	}
 	public Object readObject() {
 		try {

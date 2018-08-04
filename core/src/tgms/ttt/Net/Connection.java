@@ -23,20 +23,18 @@ public abstract class Connection implements ConnectionKernel {
 	}
 
 	public void handleInput() {
-		while(available()) {
-			Message m = read();
-			if(m != null) {
-				if (userTwo == null) {
-					if(accept(m.player)) {
-						userTwo = m.player;
-						if (!first()) {
-							send(new Message(user.name));
-						}
+		Message m = read();
+		if(m != null) {
+			if (userTwo == null) {
+				if(accept(m.player)) {
+					userTwo = m.player;
+					if (!first()) {
+						send(new Message(user.name));
 					}
-				} else {
-					if(m.x >= 0) {
-						b.makeMove(m.x, m.y);
-					}
+				}
+			} else {
+				if(m.x >= 0) {
+					b.makeMove(m.x, m.y);
 				}
 			}
 		}

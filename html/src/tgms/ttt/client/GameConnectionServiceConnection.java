@@ -89,24 +89,6 @@ public class GameConnectionServiceConnection extends Connection {
 	}
 
 	@Override
-	public boolean available() {
-		conn.available(new AvailableAsync());
-		return read != null;
-	}
-	class AvailableAsync implements AsyncCallback<Boolean> {
-		@Override
-		public void onFailure(Throwable arg0) {
-			arg0.printStackTrace();
-		}
-		@Override
-		public void onSuccess(Boolean result) {
-			if (result) {
-				conn.read(new ReadAsync());
-			}
-		}
-	}
-
-	@Override
 	public void send(Message m) {
 		conn.send(m, null);
 	}
@@ -115,6 +97,7 @@ public class GameConnectionServiceConnection extends Connection {
 	public Message read() {
 		Message m = read;
 		read = null;
+		conn.read(new ReadAsync());
 		return m; 
 	}
 	class ReadAsync implements AsyncCallback<Message> {
