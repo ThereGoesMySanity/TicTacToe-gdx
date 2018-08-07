@@ -57,12 +57,4 @@ public class MessageSocket {
 			return null;
 		}
 	}
-	public boolean available() {
-		try {
-			return in.available() > 0;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
-	}
 }

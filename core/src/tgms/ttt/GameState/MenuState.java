@@ -128,4 +128,12 @@ public class MenuState extends GameState {
         			TicTacToe.WIDTH - x, spacing * 0.6f);
         }
 	}
+
+	@Override
+	public void update() {
+	}
+
+	@Override
+	public void dispose() {
+	}
 }

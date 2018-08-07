@@ -63,4 +63,8 @@ public class GameOver extends GameState {
 	public void onResize() {
 		board.onResize();
 	}
+
+	@Override
+	public void dispose() {
+	}
 }

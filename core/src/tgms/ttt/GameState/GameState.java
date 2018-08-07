@@ -13,15 +13,11 @@ public abstract class GameState {
         this.gsm = gsm;
     }
 
-    public void update() {}
-
+    public abstract void update();
     public abstract void draw(ShapeRenderer s, SpriteBatch sb);
-
     public abstract boolean keyReleased(int k);
-
     public abstract boolean mouseReleased(int x, int y);
-
     public abstract boolean mouseMoved(int x, int y);
-    
     public abstract void onResize();
+	public abstract void dispose();
 }

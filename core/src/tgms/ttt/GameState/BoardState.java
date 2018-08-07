@@ -387,4 +387,12 @@ public class BoardState extends GameState {
 	public void onResize() {
 		updateOffset();
 	}
+
+	@Override
+	public void update() {
+	}
+
+	@Override
+	public void dispose() {
+	}
 }

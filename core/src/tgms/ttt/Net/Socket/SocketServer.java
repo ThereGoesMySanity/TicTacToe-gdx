@@ -16,7 +16,8 @@ public class SocketServer extends SocketConnection {
 		}
     }
 
-    public void start() {
+    @Override
+	public void start() {
     	try {
 	        Socket s = ss.accept();
 			init(s);

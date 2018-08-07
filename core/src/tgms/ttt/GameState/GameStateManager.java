@@ -115,4 +115,8 @@ public class GameStateManager implements InputProcessor {
     public Platform platform() {
         return platform;
     }
+
+	public void dispose() {
+		currentState.dispose();
+	}
 }

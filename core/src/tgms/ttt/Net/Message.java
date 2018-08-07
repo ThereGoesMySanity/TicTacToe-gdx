@@ -6,6 +6,7 @@ public class Message implements Serializable {
 	public static final byte CONNECT = 1;
 	public static final byte GET_USERS = 2;
 	public static final byte CONNECT_TO_USER = 3;
+	public static final byte DISCONNECT = 4;
 
 	/**
 	 * 

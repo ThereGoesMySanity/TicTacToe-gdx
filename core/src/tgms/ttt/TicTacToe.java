@@ -49,6 +49,7 @@ public class TicTacToe extends ApplicationAdapter {
 
     @Override
     public void dispose() {
+    	gsm.dispose();
         batch.dispose();
         shape.dispose();
     }
@@ -57,7 +58,6 @@ public class TicTacToe extends ApplicationAdapter {
     public void resize(int w, int h) {
     	WIDTH = w;
     	HEIGHT = h;
-    	Gdx.app.debug("test", w + " " + h);
     	camera.setToOrtho(true, WIDTH, HEIGHT);
     	batch.setProjectionMatrix(camera.combined);
     	shape.setProjectionMatrix(camera.combined);

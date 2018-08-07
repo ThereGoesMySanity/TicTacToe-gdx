@@ -3,6 +3,7 @@ package tgms.ttt.Net;
 public class ConnectionThread implements Runnable {
     private Connection conn;
     private int sleep;
+    private boolean running = true;
 
     public ConnectionThread(Connection c) {
         this(c, 100);
@@ -16,7 +17,7 @@ public class ConnectionThread implements Runnable {
     @Override
     public void run() {
         conn.start();
-        while(true) {
+        while (running) {
             try {
                 Thread.sleep(sleep);
                 conn.handleInput();
@@ -24,5 +25,9 @@ public class ConnectionThread implements Runnable {
                 e.printStackTrace();
             }
         }
+    }
+    
+    public void stop() {
+    	running = false;
     }
 }

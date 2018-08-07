@@ -123,6 +123,7 @@ public class GameConnectionServiceImpl extends RemoteServiceServlet implements G
 	}
 
 	public synchronized Message read(String id) {
+		if(messages == null || !available(id)) return null;
 		return messages.get(id).poll();
 	}
 
@@ -137,8 +138,12 @@ public class GameConnectionServiceImpl extends RemoteServiceServlet implements G
 
 	@Override
 	public synchronized void close() {
-		if (names.containsKey(getSessionId())) players.remove(names.remove(getSessionId()));
-		if (games.containsKey(getSessionId())) games.remove(games.remove(getSessionId()));
-		if (messages.containsKey(getSessionId())) messages.remove(getSessionId());
+		close(getSessionId());
+	}
+
+	public synchronized void close(String id) {
+		if (names.containsKey(id)) players.remove(names.remove(id));
+		if (games.containsKey(id)) games.remove(games.remove(id));
+		if (messages.containsKey(id)) messages.remove(id);
 	}
 }

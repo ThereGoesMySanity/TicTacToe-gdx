@@ -149,6 +149,13 @@ public class OptionsState extends GameState {
 
 	@Override
 	public void onResize() {
-		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void update() {
+	}
+
+	@Override
+	public void dispose() {
 	}
 }

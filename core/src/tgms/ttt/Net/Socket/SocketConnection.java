@@ -24,11 +24,6 @@ public abstract class SocketConnection extends Connection {
 	}
 
 	@Override
-	public boolean available() {
-		return ms.available();
-	}
-
-	@Override
 	public void send(Message m) {
 		ms.write(m);
 	}

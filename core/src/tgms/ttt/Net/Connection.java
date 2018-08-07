@@ -1,15 +1,20 @@
 package tgms.ttt.Net;
 
+import java.util.HashSet;
+
 import tgms.ttt.GameState.BoardState;
+import tgms.ttt.PlatformInterfaces.Interruptible;
 
 public abstract class Connection implements ConnectionKernel {
 	private Player user;
 	protected Player userTwo;
 	BoardState b;
 	protected boolean connected = false;
+	private HashSet<Interruptible> interrupts;
 
 	public Connection(String username) {
 		user = new Player(username);
+		interrupts = new HashSet<>();
 	}
 
 	public void start() {
@@ -25,7 +30,10 @@ public abstract class Connection implements ConnectionKernel {
 	public void handleInput() {
 		Message m = read();
 		if(m != null) {
-			if (userTwo == null) {
+			if (m.type != 0) {
+				for (Interruptible i : interrupts) i.interrupt(m.type);
+			}
+			if (userTwo == null && m.player != null) {
 				if(accept(m.player)) {
 					userTwo = m.player;
 					if (!first()) {
@@ -58,5 +66,14 @@ public abstract class Connection implements ConnectionKernel {
 
 	public Player getUser() {
 		return user;
+	}
+
+	public void addInterrupt(Interruptible i) {
+		interrupts.add(i);
+	}
+
+	@Override
+	public void close() {
+		send(new Message(Message.DISCONNECT));
 	}
 }

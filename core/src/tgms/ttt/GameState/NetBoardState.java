@@ -27,6 +27,7 @@ public class NetBoardState extends BoardState {
 			} else {
 			    conn.start();
 			}
+			gsm.platform().online.connectToUser(conn);
 		}
 		if(gsm.platform().thread == null) {
 			conn.handleInput();
@@ -47,7 +48,6 @@ public class NetBoardState extends BoardState {
 			conn.send(new Message(x, y));
 		}
 		super.makeMove(x, y);
-		if (gsm.WIN != null) conn.close();
 	}
 
 	@Override
@@ -67,4 +67,8 @@ public class NetBoardState extends BoardState {
 		sb.end();
 	}
 	
+	@Override
+	public void dispose() {
+		conn.close();
+	}
 }
