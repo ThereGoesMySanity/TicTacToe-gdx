@@ -21,7 +21,6 @@ public class SocketClient extends SocketConnection {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-    	super.start();
     }
 
 	@Override

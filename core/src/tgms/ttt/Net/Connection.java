@@ -2,13 +2,13 @@ package tgms.ttt.Net;
 
 import java.util.HashSet;
 
-import tgms.ttt.GameState.BoardState;
+import tgms.ttt.GameState.NetBoardState;
 import tgms.ttt.PlatformInterfaces.Interruptible;
 
 public abstract class Connection implements ConnectionKernel {
 	private Player user;
 	protected Player userTwo;
-	BoardState b;
+	NetBoardState b;
 	protected boolean connected = false;
 	private HashSet<Interruptible> interrupts;
 
@@ -16,18 +16,17 @@ public abstract class Connection implements ConnectionKernel {
 		user = new Player(username);
 		interrupts = new HashSet<>();
 	}
-
-	public void start() {
-		if (first()) {
-			send(new Message(user.name));
-		}
-	}
+	
+	public abstract void start();
 
 	public boolean accept(Player p) {
 		return true;
 	}
 
 	public void handleInput() {
+		if (connected && userTwo == null && first()) {
+			send(new Message(user.name));
+		}
 		Message m = read();
 		if(m != null) {
 			if (m.type != 0) {
@@ -42,7 +41,7 @@ public abstract class Connection implements ConnectionKernel {
 				}
 			} else {
 				if(m.x >= 0) {
-					b.makeMove(m.x, m.y);
+					b.receiveMove(m.x, m.y);
 				}
 			}
 		}
@@ -60,7 +59,7 @@ public abstract class Connection implements ConnectionKernel {
 		return connected;
 	}
 
-	public void setBoardState(BoardState b) {
+	public void setBoardState(NetBoardState b) {
 		this.b = b;
 	}
 

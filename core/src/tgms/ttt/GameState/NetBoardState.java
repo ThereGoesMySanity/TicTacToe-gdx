@@ -42,12 +42,16 @@ public class NetBoardState extends BoardState {
                 && super.mouseReleased(x, y);
 	}
 	
+	public void receiveMove(int x, int y) {
+		super.makeMove(x, y);
+	}
+	
 	@Override
 	public void makeMove(int x, int y) {
 		if(conn.connected() && getTurn() == conn.getLocalTurn()) {
 			conn.send(new Message(x, y));
+			super.makeMove(x, y);
 		}
-		super.makeMove(x, y);
 	}
 
 	@Override

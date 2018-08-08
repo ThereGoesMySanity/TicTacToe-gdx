@@ -37,4 +37,8 @@ public class Message implements Serializable {
 	public Message(byte f) {
 		type = f;
 	}
+	@Override
+	public String toString() {
+		return "type: "+type;
+	}
 }

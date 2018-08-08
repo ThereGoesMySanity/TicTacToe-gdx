@@ -1,7 +1,6 @@
 package tgms.ttt.client;
 
 import com.google.gwt.core.shared.GWT;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import tgms.ttt.Net.Connection;
@@ -11,6 +10,7 @@ public class GameConnectionServiceConnection extends Connection {
 	private GameConnectionServiceAsync conn;
 	private boolean first;
 	private Message read;
+	private InterruptDialog id;
 
 	public GameConnectionServiceConnection(String username) {
 		super(username);
@@ -22,37 +22,44 @@ public class GameConnectionServiceConnection extends Connection {
 			}
 			@Override
 			public void onSuccess(Void arg0) {
-				conn.getUsers(new GetUsersAsync());
+				getUsers();
 			}
 		});
+	}
+	
+	public void getUsers() {
+		conn.getUsers(new GetUsersAsync());
 	}
 
 	class GetUsersAsync implements AsyncCallback<String[]> {
 		@Override
 		public void onSuccess(String[] result) {
-			StringBuilder prompt = new StringBuilder("Select a user to connect to:\n");
-			String s = "";
-			for(String u : result) {
-				if (!u.equals(getUser().name)) {
-					prompt.append(u);
-					prompt.append('\n');
-				}
+			if (id == null) {
+				id = new InterruptDialog(result, getUser().name, GameConnectionServiceConnection.this);
+				addInterrupt(id);
+				id.show();
+			} else {
+				id.refresh(result);
 			}
-			if (result.length == 1) {
-				prompt.append("No users! Leave the box blank and hit OK to refresh.");
-			}
-			s = Window.prompt(prompt.toString(), "");
-			if (s.isEmpty()) {
-				conn.getUsers(this);
-			} else if (s != null) {
+		}
+		@Override
+		public void onFailure(Throwable caught) {
+			caught.printStackTrace();
+		}
+	}
+	
+	class ChooseUserAsync implements AsyncCallback<String> {
+		@Override
+		public void onSuccess(String s) {
+			if (s != null) {
 				userTwo.name = s;
 				conn.connectToUser(s, new StartAsync());
 			}
 			//TODO: on cancel
 		}
 		@Override
-		public void onFailure(Throwable caught) {
-			caught.printStackTrace();
+		public void onFailure(Throwable arg0) {
+			arg0.printStackTrace();
 		}
 	}
 

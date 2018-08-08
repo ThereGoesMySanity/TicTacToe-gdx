@@ -53,7 +53,14 @@ public class GameStateManager implements InputProcessor {
 	public void setState(State boardstate){
 		GameState s = loadState(boardstate);
 		if (s != null) {
+			unloadState(currentState);
 			currentState = s;
+		}
+	}
+	
+	public void unloadState(GameState state) {
+		if (state != null) {
+			currentState.dispose();
 		}
 	}
 

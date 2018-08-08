@@ -114,6 +114,7 @@ public class GameConnectionServiceImpl extends RemoteServiceServlet implements G
 	}
 
 	public synchronized void send(String id, Message m) {
+		System.out.println(m);
 		messages.get(games.get(id)).add(m);
 	}
 

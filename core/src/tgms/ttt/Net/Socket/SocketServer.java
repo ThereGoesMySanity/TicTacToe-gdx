@@ -26,7 +26,6 @@ public class SocketServer extends SocketConnection {
     	} catch (Exception e1) {
 			e1.printStackTrace();
 		}
-    	super.start();
     }
 
 	@Override
@@ -41,7 +40,6 @@ public class SocketServer extends SocketConnection {
 			ss.close();
 			sock.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
