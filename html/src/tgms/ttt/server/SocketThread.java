@@ -19,21 +19,25 @@ public class SocketThread {
 			while (running) {
 				Message m = mSocket.read();
 				System.out.println(id);
-				switch (m.type) {
-				case Message.CONNECT:
-					servlet.connect(id, m.player.name);
-					break;
-				case Message.GET_USERS:
-					mSocket.writeObject(servlet.getUsers());
-					break;
-				case Message.CONNECT_TO_USER:
-					servlet.connectToUser(id, m.player.name);
-					break;
-				case Message.DISCONNECT:
+				if (m != null) {
+					switch (m.type) {
+					case Message.CONNECT:
+						servlet.connect(id, m.player.name);
+						break;
+					case Message.GET_USERS:
+						mSocket.writeObject(servlet.getUsers());
+						break;
+					case Message.CONNECT_TO_USER:
+						servlet.connectToUser(id, m.player.name);
+						break;
+					case Message.DISCONNECT:
+						servlet.close(id);
+						break;
+					default:
+						servlet.send(id, m);
+					}
+				} else {
 					servlet.close(id);
-					break;
-				default:
-					servlet.send(id, m);
 				}
 			}
 		}).start();

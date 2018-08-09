@@ -15,6 +15,7 @@ public class MessageSocket {
 	private ObjectOutputStream out;
 	public MessageSocket(InputStream i, OutputStream o) {
 		try {
+			System.out.println("made the stream");
 			out = new ObjectOutputStream(o);
 			in = new ObjectInputStream(i);
 		} catch (IOException e) {
@@ -49,7 +50,7 @@ public class MessageSocket {
 	public Message read() {
 		return (Message)readObject();
 	}
-	public Object readObject() {
+	public synchronized Object readObject() {
 		try {
 			return in.readObject();
 		} catch (ClassNotFoundException | IOException e) {

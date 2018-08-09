@@ -61,22 +61,9 @@ class DesktopUtils extends Platform {
 				String s = "";
 				if (c instanceof GameServerSocket) {
 					GameServerSocket gss = (GameServerSocket)c;
-					while (s == null || s.isEmpty()) {
-						StringBuilder prompt = new StringBuilder("Select a user to connect to:\n");
-						String[] users = gss.getUsers();
-						for(String u : users) {
-							if (!u.equals(gss.getUser().name)) {
-								prompt.append(u);
-								prompt.append('\n');
-							}
-						}
-						if (users.length == 1) {
-							prompt.append("No users! Leave the box blank and hit OK to refresh.");
-						}
-						InterruptPane ip = new InterruptPane(prompt.toString());
-						gss.addInterrupt(ip);
-						s = ip.showDialog();
-					}
+					InterruptPane ip = new InterruptPane(gss);
+					gss.addInterrupt(ip);
+					s = ip.showDialog();
 					gss.connectToUser(s);
 				}
 				return s;

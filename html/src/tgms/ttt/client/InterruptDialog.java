@@ -1,5 +1,6 @@
 package tgms.ttt.client;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -14,8 +15,8 @@ public class InterruptDialog extends DialogBox implements Interruptible {
 	String user;
 	VerticalPanel names;
 
-	public InterruptDialog(String[] users, String user, GameConnectionServiceConnection gcsc) {
-		this.user = user;
+	public InterruptDialog(String[] users, GameConnectionServiceConnection gcsc) {
+		this.user = gcsc.getUser().name;
 		this.callback = gcsc.new ChooseUserAsync();
 		setText("Choose a user");
 		HorizontalPanel opts = new HorizontalPanel();
@@ -35,12 +36,13 @@ public class InterruptDialog extends DialogBox implements Interruptible {
 
 	public void refresh(String[] users) {
 		names.clear();
+		ClickHandler ch = (ClickEvent ce) ->  {
+			callback.onSuccess(((Button)ce.getSource()).getText());
+			InterruptDialog.this.hide();
+		};
 		for(String u : users) {
 			if (!u.equals(user)) {
-				names.add(new Button(user, (ClickEvent ce) ->  {
-					callback.onSuccess(u);
-					InterruptDialog.this.hide();
-				}));
+				names.add(new Button(u, ch));
 			}
 		}
 	}

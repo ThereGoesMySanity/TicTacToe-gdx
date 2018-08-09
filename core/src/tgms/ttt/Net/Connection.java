@@ -30,6 +30,7 @@ public abstract class Connection implements ConnectionKernel {
 		Message m = read();
 		if(m != null) {
 			if (m.type != 0) {
+				System.out.println("Interrupt "+m.type);
 				for (Interruptible i : interrupts) i.interrupt(m.type);
 			}
 			if (userTwo == null && m.player != null) {

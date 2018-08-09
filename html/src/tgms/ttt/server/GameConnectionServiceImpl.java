@@ -29,7 +29,6 @@ public class GameConnectionServiceImpl extends RemoteServiceServlet implements G
 	private boolean running = true;
 	private static final long serialVersionUID = 1L;
 
-
 	class GameServer extends Thread {
 		private ServerSocket ss;
 		private GameConnectionServiceImpl s;
@@ -101,7 +100,7 @@ public class GameConnectionServiceImpl extends RemoteServiceServlet implements G
 		games.put(players.get(username), id);
 		Message m = new Message(names.get(id));
 		m.type = Message.CONNECT_TO_USER;
-		send(players.get(username), m);
+		send(id, m);
 	}
 
 	public synchronized boolean available(String id) {

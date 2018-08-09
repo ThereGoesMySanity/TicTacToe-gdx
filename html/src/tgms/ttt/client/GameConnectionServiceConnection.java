@@ -35,7 +35,7 @@ public class GameConnectionServiceConnection extends Connection {
 		@Override
 		public void onSuccess(String[] result) {
 			if (id == null) {
-				id = new InterruptDialog(result, getUser().name, GameConnectionServiceConnection.this);
+				id = new InterruptDialog(result, GameConnectionServiceConnection.this);
 				addInterrupt(id);
 				id.show();
 			} else {

@@ -1,6 +1,7 @@
 package tgms.ttt.Net.Socket;
 
 import java.io.IOException;
+import java.net.Socket;
 
 import tgms.ttt.Net.Message;
 
@@ -36,5 +37,10 @@ public class GameServerSocket extends SocketClient implements GameServerKernel {
 		m.type = Message.CONNECT_TO_USER;
 		send(m);
 		connected = true;
+	}
+	
+	@Override
+	protected void init(Socket s) {
+		//important override
 	}
 }
