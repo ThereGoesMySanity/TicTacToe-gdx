@@ -20,8 +20,10 @@ public class GameServerSocket extends SocketClient implements GameServerKernel {
 	
 	@Override
 	public String[] getUsers() {
+		return ms.getUsers();
+	}
+	public void updateUsers() {
 		send(new Message(Message.GET_USERS));
-		return (String[]) ms.readObject();
 	}
 	
 	@Override

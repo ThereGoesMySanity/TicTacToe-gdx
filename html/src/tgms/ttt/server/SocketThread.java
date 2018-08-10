@@ -15,7 +15,7 @@ public class SocketThread {
 	}
 
 	public void start() {
-		new Thread(() -> {
+		Thread read = new Thread(() -> {
 			while (running) {
 				Message m = mSocket.read();
 				System.out.println(id);
@@ -31,25 +31,28 @@ public class SocketThread {
 						servlet.connectToUser(id, m.player.name);
 						break;
 					case Message.DISCONNECT:
-						servlet.close(id);
+						end();
 						break;
 					default:
 						servlet.send(id, m);
 					}
 				} else {
-					servlet.close(id);
+					end();
 				}
 			}
-		}).start();
-		new Thread(() -> {
+		});
+		read.start();
+		Thread write = new Thread(() -> {
 			while (running) {
 				while (servlet.available(id)) {
 					mSocket.write(servlet.read(id));
 				}
 			}
-		}).start();
+		});
+		write.start();
 	}
 	public void end() {
+		servlet.close(id);
 		running = false;
 	}
 }

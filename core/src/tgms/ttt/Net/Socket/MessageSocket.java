@@ -1,5 +1,6 @@
 package tgms.ttt.Net.Socket;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -13,6 +14,7 @@ public class MessageSocket {
 	private Socket sock;
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
+	private String[] users;
 	public MessageSocket(InputStream i, OutputStream o) {
 		try {
 			System.out.println("made the stream");
@@ -48,14 +50,27 @@ public class MessageSocket {
 		}
 	}
 	public Message read() {
-		return (Message)readObject();
+		Object o = readObject();
+		if (o instanceof String[]) {
+			users = (String[])o;
+			return new Message(Message.GET_USERS);
+		}
+		return (Message)o;
 	}
 	public synchronized Object readObject() {
 		try {
 			return in.readObject();
+		} catch (EOFException e) {
+			System.out.println("Client "+sock.getRemoteSocketAddress()+" disconnected");
+			return null;
 		} catch (ClassNotFoundException | IOException e) {
 			e.printStackTrace();
 			return null;
 		}
+	}
+	public String[] getUsers() {
+		String[] u = users;
+		users = null;
+		return u;
 	}
 }

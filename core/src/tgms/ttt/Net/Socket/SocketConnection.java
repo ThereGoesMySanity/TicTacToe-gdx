@@ -35,6 +35,7 @@ public abstract class SocketConnection extends Connection {
 
 	@Override
 	public void close() {
+		super.close();
 		try {
 			sock.close();
 		} catch (IOException e) {

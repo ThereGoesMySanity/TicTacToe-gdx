@@ -111,8 +111,12 @@ public class GameConnectionServiceImpl extends RemoteServiceServlet implements G
 	public void send(Message m) {
 		send(getSessionId(), m);
 	}
+	
+	public void send(String id, Message m) {
+		sendTo(games.get(id), m);
+	}
 
-	public synchronized void send(String id, Message m) {
+	public synchronized void sendTo(String id, Message m) {
 		System.out.println(m);
 		messages.get(games.get(id)).add(m);
 	}

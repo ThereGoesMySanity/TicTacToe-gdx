@@ -35,6 +35,7 @@ public class Message implements Serializable {
 		type = 0;
 	}
 	public Message(byte f) {
+		x = y = -1;
 		type = f;
 	}
 	@Override

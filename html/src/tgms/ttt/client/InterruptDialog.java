@@ -11,30 +11,33 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import tgms.ttt.PlatformInterfaces.Interruptible;
 
 public class InterruptDialog extends DialogBox implements Interruptible {
+	String width;
 	AsyncCallback<String> callback;
 	String user;
 	VerticalPanel names;
+	HorizontalPanel opts;
 
 	public InterruptDialog(String[] users, GameConnectionServiceConnection gcsc) {
 		this.user = gcsc.getUser().name;
 		this.callback = gcsc.new ChooseUserAsync();
 		setText("Choose a user");
-		HorizontalPanel opts = new HorizontalPanel();
+		opts = new HorizontalPanel();
+		opts.add(new Button("Refresh", (ClickEvent ce) -> gcsc.getUsers()));
 		opts.add(new Button("Cancel", (ClickEvent ce) -> {
 			callback.onSuccess(null);
 			InterruptDialog.this.hide();
 		}));
-		opts.add(new Button("Refresh", (ClickEvent ce) -> gcsc.getUsers()));
 		names = new VerticalPanel();
-		refresh(users);
 		ScrollPanel sp = new ScrollPanel(names);
 		VerticalPanel main = new VerticalPanel();
 		main.add(sp);
 		main.add(opts);
 		setWidget(main);
+		refresh(users);
 	}
 
 	public void refresh(String[] users) {
+		width = opts.getElement().getClientWidth() + "px";
 		names.clear();
 		ClickHandler ch = (ClickEvent ce) ->  {
 			callback.onSuccess(((Button)ce.getSource()).getText());
@@ -42,7 +45,9 @@ public class InterruptDialog extends DialogBox implements Interruptible {
 		};
 		for(String u : users) {
 			if (!u.equals(user)) {
-				names.add(new Button(u, ch));
+				Button b = new Button(u, ch);
+				if (!width.equals("0px")) b.setWidth(width);
+				names.add(b);
 			}
 		}
 	}

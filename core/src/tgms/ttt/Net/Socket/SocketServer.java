@@ -38,7 +38,6 @@ public class SocketServer extends SocketConnection {
 		super.close();
 		try {
 			ss.close();
-			sock.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
