@@ -103,7 +103,7 @@ public class GameStateManager implements InputProcessor {
 	}
 
     @Override
-    public boolean scrolled(int amount) {
+    public boolean scrolled(int length) {
         return false;
     }
 

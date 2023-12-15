@@ -76,11 +76,9 @@ public class GameConnectionServiceImpl extends RemoteServiceServlet implements G
 
 	public synchronized void connect(String id, String username) {
 		System.out.println(username + " connected");
-		if(!players.containsKey(username)) {
-			players.put(username, id);
-			names.put(id, username);
-			messages.put(id, new ArrayDeque<Message>());
-		} 
+		players.put(username, id);
+		names.put(id, username);
+		messages.put(id, new ArrayDeque<Message>());
 	}
 
 	@Override
@@ -111,14 +109,13 @@ public class GameConnectionServiceImpl extends RemoteServiceServlet implements G
 	public void send(Message m) {
 		send(getSessionId(), m);
 	}
-	
+
 	public void send(String id, Message m) {
 		sendTo(games.get(id), m);
 	}
 
 	public synchronized void sendTo(String id, Message m) {
-		System.out.println(m);
-		messages.get(games.get(id)).add(m);
+		messages.get(id).add(m);
 	}
 
 	@Override

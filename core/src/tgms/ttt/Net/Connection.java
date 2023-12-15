@@ -2,6 +2,8 @@ package tgms.ttt.Net;
 
 import java.util.HashSet;
 
+import com.badlogic.gdx.Gdx;
+
 import tgms.ttt.GameState.NetBoardState;
 import tgms.ttt.PlatformInterfaces.Interruptible;
 
@@ -30,7 +32,7 @@ public abstract class Connection implements ConnectionKernel {
 		Message m = read();
 		if(m != null) {
 			if (m.type != 0) {
-				System.out.println("Interrupt "+m.type);
+				Gdx.app.debug("help", "Interrupt "+m.type);
 				for (Interruptible i : interrupts) i.interrupt(m.type);
 			}
 			if (userTwo == null && m.player != null) {

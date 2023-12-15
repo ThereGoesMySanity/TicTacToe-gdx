@@ -38,7 +38,7 @@ public class NetBoardState extends BoardState {
 	@Override
 	public boolean mouseReleased(int x, int y) {
 		return conn.connected()
-				&& getTurn() == conn.getLocalTurn()
+				&& board.getTurn() == conn.getLocalTurn()
                 && super.mouseReleased(x, y);
 	}
 	
@@ -48,7 +48,7 @@ public class NetBoardState extends BoardState {
 	
 	@Override
 	public void makeMove(int x, int y) {
-		if(conn.connected() && getTurn() == conn.getLocalTurn()) {
+		if(conn.connected() && board.getTurn() == conn.getLocalTurn()) {
 			conn.send(new Message(x, y));
 			super.makeMove(x, y);
 		}
@@ -62,7 +62,7 @@ public class NetBoardState extends BoardState {
 		if(!conn.connected()) {
 			font.draw(sb, "Connecting...", TicTacToe.WIDTH/2, TicTacToe.HEIGHT/2);
 		} else {
-			if(getTurn() == conn.getLocalTurn()) {
+			if(board.getTurn() == conn.getLocalTurn()) {
 				font.draw(sb, "Your turn", 0, 50);
 			} else {
 				font.draw(sb, conn.getPlayerName()+"'s turn", 0, 50);

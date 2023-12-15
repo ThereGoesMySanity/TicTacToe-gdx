@@ -1,4 +1,5 @@
 package tgms.ttt.client;
+import com.badlogic.gdx.Gdx;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -43,6 +44,7 @@ public class InterruptDialog extends DialogBox implements Interruptible {
 			callback.onSuccess(((Button)ce.getSource()).getText());
 			InterruptDialog.this.hide();
 		};
+		Gdx.app.debug("get user", "done");
 		for(String u : users) {
 			if (!u.equals(user)) {
 				Button b = new Button(u, ch);
@@ -54,6 +56,7 @@ public class InterruptDialog extends DialogBox implements Interruptible {
 
 	@Override
 	public void interrupt(int type) {
+		Gdx.app.debug("heye", "html");
 		this.hide();
 	}
 }

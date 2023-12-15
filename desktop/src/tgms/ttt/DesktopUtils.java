@@ -1,4 +1,4 @@
-package tgms.ttt.desktop;
+package tgms.ttt;
 
 import static tgms.ttt.Net.Socket.SocketConnection.DEFAULT_PORT;
 

@@ -1,4 +1,4 @@
-package tgms.ttt.desktop;
+package tgms.ttt;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -10,6 +10,8 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+
+import com.badlogic.gdx.Gdx;
 
 import tgms.ttt.Net.Message;
 import tgms.ttt.Net.Socket.GameServerSocket;
@@ -68,6 +70,7 @@ public class InterruptPane extends JOptionPane implements Interruptible {
 	public void interrupt(int type) {
 		switch (type) {
 		case Message.CONNECT_TO_USER:
+			Gdx.app.debug("he", "y");
 			dialog.dispose();
 			break;
 		case Message.GET_USERS:
